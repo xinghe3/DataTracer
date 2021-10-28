@@ -31,7 +31,7 @@ namespace CN.MACH.AOP.Fody.Index
         public List<RecordInfo> Search(string keywords)
         {
             List<RecordInfo> records = new List<RecordInfo>();
-            List<int> IDs = cacheProvider.Get<List<int>>(MgConstants.IndexDocListKey, keywords);
+            HashSet<int> IDs = cacheProvider.Get<HashSet<int>>(MgConstants.IndexDocListKey, keywords);
             if (IDs == null)
                 return records;
             foreach (int ID in IDs)

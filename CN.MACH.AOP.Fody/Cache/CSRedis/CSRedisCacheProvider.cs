@@ -94,5 +94,10 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         {
             return IsCache;
         }
+
+        public long Count(string key)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -288,6 +288,19 @@ namespace DC.ETL.Infrastructure.Cache.Redis
 
         #region Hash 操作
 
+        public long HashLength(string redisKey)
+        {
+            redisKey = AddKeyPrefix(redisKey);
+            try
+            {
+                return GetDB().HashLength(redisKey);
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteExLog(ex, redisKey);
+            }
+            return -1;
+        }
         /// <summary>
         /// 判断该字段是否存在 hash 中
         /// </summary>
@@ -496,7 +509,11 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         }
 
         #region async
-
+        public async Task<long> HashLengthAsync(string redisKey)
+        {
+            redisKey = AddKeyPrefix(redisKey);
+            return await GetDB().HashLengthAsync(redisKey);
+        }
         /// <summary>
         /// 判断该字段是否存在 hash 中
         /// </summary>
@@ -1301,7 +1318,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <param name="e"></param>
         private static void ConnMultiplexer_ConfigurationChangedBroadcast(object sender, EndPointEventArgs e)
         {
-            Console.WriteLine("{nameof(ConnMultiplexer_ConfigurationChangedBroadcast)}: {e.EndPoint}");
+            Console.WriteLine($"{nameof(ConnMultiplexer_ConfigurationChangedBroadcast)}: {e.EndPoint}");
         }
 
         /// <summary>
@@ -1311,7 +1328,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <param name="e"></param>
         private static void ConnMultiplexer_InternalError(object sender, InternalErrorEventArgs e)
         {
-            Console.WriteLine("{nameof(ConnMultiplexer_InternalError)}: {e.Exception}");
+            Console.WriteLine($"{nameof(ConnMultiplexer_InternalError)}: {e.Exception}");
         }
 
         /// <summary>
@@ -1321,7 +1338,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <param name="e"></param>
         private static void ConnMultiplexer_HashSlotMoved(object sender, HashSlotMovedEventArgs e)
         {
-            Console.WriteLine("{nameof(ConnMultiplexer_HashSlotMoved)}: {nameof(e.OldEndPoint)}-{e.OldEndPoint} To {nameof(e.NewEndPoint)}-{e.NewEndPoint}, ");
+            Console.WriteLine($"{nameof(ConnMultiplexer_HashSlotMoved)}: {nameof(e.OldEndPoint)}-{e.OldEndPoint} To {nameof(e.NewEndPoint)}-{e.NewEndPoint}, ");
         }
 
         /// <summary>
@@ -1331,7 +1348,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <param name="e"></param>
         private static void ConnMultiplexer_ConfigurationChanged(object sender, EndPointEventArgs e)
         {
-            Console.WriteLine("{nameof(ConnMultiplexer_ConfigurationChanged)}: {e.EndPoint}");
+            Console.WriteLine($"{nameof(ConnMultiplexer_ConfigurationChanged)}: {e.EndPoint}");
         }
 
         /// <summary>
@@ -1341,7 +1358,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <param name="e"></param>
         private static void ConnMultiplexer_ErrorMessage(object sender, RedisErrorEventArgs e)
         {
-            Console.WriteLine("{nameof(ConnMultiplexer_ErrorMessage)}: {e.Message}");
+            Console.WriteLine($"{nameof(ConnMultiplexer_ErrorMessage)}: {e.Message}");
         }
 
         /// <summary>
@@ -1351,7 +1368,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <param name="e"></param>
         private static void ConnMultiplexer_ConnectionFailed(object sender, ConnectionFailedEventArgs e)
         {
-            Console.WriteLine("{nameof(ConnMultiplexer_ConnectionFailed)}: {e.Exception}");
+            Console.WriteLine($"{nameof(ConnMultiplexer_ConnectionFailed)}: {e.Exception}");
         }
 
         /// <summary>
@@ -1361,7 +1378,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <param name="e"></param>
         private static void ConnMultiplexer_ConnectionRestored(object sender, ConnectionFailedEventArgs e)
         {
-            Console.WriteLine("{nameof(ConnMultiplexer_ConnectionRestored)}: {e.Exception}");
+            Console.WriteLine($"{nameof(ConnMultiplexer_ConnectionRestored)}: {e.Exception}");
         }
 
         #endregion 注册事件

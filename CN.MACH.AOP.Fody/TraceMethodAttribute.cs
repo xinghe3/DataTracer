@@ -17,7 +17,7 @@ namespace FodyAopTool
     [AttributeUsage(AttributeTargets.All)] //可以分为对属性，方法，域等注解，all就是全部都注解
     public class TraceTargetAttribute : Attribute
     {
-        private readonly ICacheProvider cacheProvider = new RedisCacheProvider(
+        private static ICacheProvider cacheProvider = new RedisCacheProvider(
                 new CN.MACH.AI.Cache.CacheSetting()
                 {
                      Connection = "127.0.0.1", Port = 6379, PefixKey = "zbytest:"
