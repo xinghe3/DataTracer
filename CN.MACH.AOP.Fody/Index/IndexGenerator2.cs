@@ -1,19 +1,26 @@
-﻿using CN.MACH.AOP.Fody.Utils;
+﻿using CN.MACH.AI.UnitTest.Core.Utils;
+using CN.MACH.AOP.Fody.Comparers;
+using CN.MACH.AOP.Fody.Utils;
 using DC.ETL.Infrastructure.Cache;
+using DC.ETL.Infrastructure.Cache.Redis;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CN.MACH.AOP.Fody.Index
 {
-    internal class InvertedIndex
+    class InvertedIndex2
     {
 
-        internal static void Init(Dictionary<string, HashSet<int>> index, string code, int id)
+        internal static void Init(Dictionary<byte[], HashSet<int>> index, string code, int id)
         {
             int doc_id = id;
             string content = code;
             // replace by pangu
-            HashSet<string> words = WordSplitUtils.SplitRegex(content);
+            HashSet<byte[]> words = WordSplitUtils.SplitRegexBytes(content);
             //HashSet<string> splitWords = new HashSet<string>();
             //foreach (string word in words)
             //{
@@ -21,21 +28,21 @@ namespace CN.MACH.AOP.Fody.Index
             //    splitWords.UnionWith(splitWords1);
             //}
             //words.UnionWith(splitWords);
-            foreach (string word in words)
+            foreach (byte[] word in words)
             {
                 bool exist = index.ContainsKey(word);
                 if (!exist)
                 {
                     HashSet<int> posting = new HashSet<int>();
-                    _ = posting.Add(doc_id);
+                    posting.Add(doc_id);
                     index.Add(word, posting);
                 }
                 else
                 {
-                    HashSet<int> posting = index[word];
+                   HashSet<int> posting = index[word];
                     if (!posting.Contains(doc_id))
                     {
-                        _ = posting.Add(doc_id);
+                        posting.Add(doc_id);
                         // index.Remove(word);
                         // index.Add(word, posting);
                     }
@@ -44,15 +51,13 @@ namespace CN.MACH.AOP.Fody.Index
         }
     }
 
-    public class IndexGenerator
+    public class IndexGenerator2
     {
         private readonly ICacheProvider cacheProvider;
-        public IndexGenerator(ICacheProvider cacheProvider)
+        public IndexGenerator2(ICacheProvider cacheProvider)
         {
             this.cacheProvider = cacheProvider;
         }
-
-        public Action<int, long> ProcessNotice { get; set; }
 
         public void Build()
         {
@@ -60,8 +65,8 @@ namespace CN.MACH.AOP.Fody.Index
             long cnt = cacheProvider.Count(MgConstants.SrcCodeRecordKey);
             int nID = 0;
             string code;
-            // int threadId = 0;
-            Dictionary<string, HashSet<int>> indexes = new Dictionary<string, HashSet<int>>();
+            int threadId = 0;
+            Dictionary<byte[], HashSet<int>> indexes = new Dictionary<byte[], HashSet<int>>(new ByteArrayComparer());
             do
             {
                 string sID = nID++.ToString();
@@ -69,18 +74,17 @@ namespace CN.MACH.AOP.Fody.Index
                 //if (nID > 10000)
                 //    break;
                 if (string.IsNullOrEmpty(code))
-                    continue;
+                    break;
                 //threadId = cacheProvider.Get<int>(MgConstants.SrcCodeThreadidKey, sID);
-                InvertedIndex.Init(indexes, code, int.Parse(sID));
-                ProcessNotice(nID, cnt);
-            } while (nID < cnt);
+                InvertedIndex2.Init(indexes, code, int.Parse(sID));
+            } while (!string.IsNullOrEmpty(code));
 
             // save to cache.
-            foreach (KeyValuePair<string, HashSet<int>> index in indexes)
-            {
-                string word = index.Key;
-                cacheProvider.Add(MgConstants.IndexDocListKey, word, index.Value);
-            }
+            //foreach (KeyValuePair<byte[], HashSet<int>> index in indexes)
+            //{
+            //    byte[] word = index.Key;
+            //    cacheProvider.Add(MgConstants.IndexDocListKey,Encoding.UTF8.GetString(word), index.Value);
+            //}
         }
     }
 }

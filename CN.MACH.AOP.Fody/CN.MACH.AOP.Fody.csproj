@@ -46,13 +46,17 @@
     <Compile Include="Cache\CSRedis\CSRedisCacheProvider.cs" />
     <Compile Include="Cache\CSRedis\CSRedisUtils.cs" />
     <Compile Include="Cache\ICacheProvider.cs" />
+    <Compile Include="Cache\IMQProvider.cs" />
     <Compile Include="Cache\Redis\RedisCacheProvider.cs" />
     <Compile Include="Cache\Redis\RedisUtils.cs" />
+    <Compile Include="Comparers\ByteArrayComparer.cs" />
+    <Compile Include="Index\IndexGenerator2.cs" />
     <Compile Include="Index\IndexGenerator.cs" />
     <Compile Include="Index\IndexSearcher.cs" />
+    <Compile Include="Index\IndexSettings.cs" />
     <Compile Include="MgConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TraceMethodAttribute.cs" />
+    <Compile Include="Attributes\TraceMethodAttribute.cs" />
     <Compile Include="Utils\CollectionUtils.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Utils\DateUtils.cs" />
@@ -87,9 +91,6 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="PanGu">
-      <Version>2.3.1</Version>
     </PackageReference>
     <PackageReference Include="PropertyChanged.Fody">
       <Version>3.4.0</Version>

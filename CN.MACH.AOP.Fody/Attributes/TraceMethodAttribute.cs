@@ -1,5 +1,6 @@
 ﻿using CN.MACH.AI.UnitTest.Core.Utils;
 using CN.MACH.AOP.Fody;
+using CN.MACH.AOP.Fody.Index;
 using CN.MACH.AOP.Fody.Utils;
 using DC.ETL.Infrastructure.Cache;
 using DC.ETL.Infrastructure.Cache.Redis;
@@ -23,6 +24,7 @@ namespace FodyAopTool
                      Connection = "127.0.0.1", Port = 6379, PefixKey = "zbytest:"
                 }
             );
+        public static bool IsRecord = false;
         private static int ID = 0;
         private object _lockID = new object();
 
@@ -32,8 +34,26 @@ namespace FodyAopTool
 
         protected Object[] Args;
 
+        static TraceTargetAttribute()
+        {
+            IMQProvider mQProvider = cacheProvider as IMQProvider;
+            if (mQProvider != null)
+            {
+                mQProvider.Subscribe<IndexOptions>(MgConstants.Options, (opt)=>
+                {
+                    if (opt == null) return;
+                    IsRecord = opt.IsRecord;
+                });
+            }
+        }
+
         public void Init(object instance, MethodBase method, object[] args)
         {
+            if (!IsRecord)
+            {
+                return;
+            }
+
             InitMethod = method;
             InitInstance = instance;
             Args = args;
@@ -83,15 +103,27 @@ namespace FodyAopTool
 
         public void OnEntry()
         {
+            if (!IsRecord)
+            {
+                return;
+            }
             //Console.WriteLine("Before " + InitMethod.Name);
         }
         public void OnExit()
         {
+            if (!IsRecord)
+            {
+                return;
+            }
             //Console.WriteLine("After " + InitMethod.Name);
         }
 
         public void OnException(Exception exception)
         {
+            if (!IsRecord)
+            {
+                return;
+            }
             // Log("Ex " + InitMethod.Name + " " + exception.Message);
         }
 

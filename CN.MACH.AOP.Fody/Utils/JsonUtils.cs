@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using CN.MACH.AI.UnitTest.Core.Utils;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,11 @@ namespace CN.MACH.AOP.Fody.Utils
 {
     public class JsonUtils
     {
+        private JArray _jArray = null;
+        /// <summary>
+        /// root object of json
+        /// </summary>
+        private JObject _jObject = null;
         /// <summary>
         /// 将字典类型序列化为json字符串
         /// </summary>
@@ -42,6 +49,109 @@ namespace CN.MACH.AOP.Fody.Utils
             return jsonDict;
 
         }
+        /// <summary>
+        /// init a json str to jobject. so we can get value or set value.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public int NInit(string json)
+        {
+            if (IsJsonObject(json))
+            {
+                _jObject = ToJObject(json);
+            }
+            else if (IsJsonArray(json))
+            {
+                _jArray = ToJArray(json);
+            }
+            else
+            {
+                Logs.WriteError("错误JSON格式?", json);
+            }
+            return ErrorCode.Success;
+        }
+        private static bool IsJsonObject(string jsonText)
+        {
+            if (string.IsNullOrWhiteSpace(jsonText)) return false;
+            jsonText = jsonText.Trim();
+            if (jsonText.StartsWith("{") && jsonText.EndsWith("}"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// check if is json
+        /// </summary>
+        /// <param name="jsonText"></param>
+        /// <returns></returns>
+        private static bool IsJsonArray(string jsonText)
+        {
+            if (string.IsNullOrWhiteSpace(jsonText)) return false;
+            jsonText = jsonText.Trim();
+            if (jsonText.StartsWith("[") && jsonText.EndsWith("]"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        private static JObject ToJObject(string json)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(json)) json = "{}";
+                return JObject.Parse(json);
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteExLog(ex);
+            }
+            return null;
+        }
+        private static JArray ToJArray(string json)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(json)) json = "[]";
+                return JArray.Parse(json);
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteExLog(ex);
+            }
+            return null;
+        }
+        public string Output(string path = null)
+        {
+            if (_jObject == null && _jArray == null) return string.Empty;
+            string name = string.Empty;
+            if (_jObject != null)
+            {
+                if (string.IsNullOrEmpty(path))
+                    return _jObject.ToString();
+                try
+                {
+                    name = (string)_jObject.SelectToken(path);
+                }
+                catch (Exception ex)
+                {
+                    Logs.WriteExLog(ex);
+                }
+            }
+            else if (_jArray != null)
+            {
+                if (string.IsNullOrEmpty(path))
+                    return _jArray.ToString();
+                throw new NotImplementedException("未测试实现数组 路径查询");
+            }
+            return name;
+        }
         public static string Serialize(object obj)
         {
             if (obj == null)
@@ -65,7 +175,22 @@ namespace CN.MACH.AOP.Fody.Utils
 
             return JsonConvert.SerializeObject(obj, settings);
         }
+        /// <summary>
+        /// remove str quote of two side.
+        /// not change special chars
+        /// </summary>
+        /// <param name="TxtCode"></param>
+        /// <returns></returns>
+        static public string RemoveStrQuotes(string quoteStr)
+        {
+            if (!StringUtils.IsExistVisibleChar(quoteStr))
+                return quoteStr;
+            string res = quoteStr.Trim();
+            if (res.First() != '"' || res.Last() != '"')
+                return quoteStr;
 
+            return StringUtils.Substring(res, 1, res.Length - 2);
+        }
 
         public static T Deserialize<T>(string json)
         {

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CN.MACH.Aop.DataTracer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Data Tracer" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -16,14 +16,14 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="45" />
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="searchKeyWords">
+            <TextBox x:Name="searchKeyWords" KeyDown="searchKeyWords_KeyDown">
                 
             </TextBox>
-            <Button Grid.Column="1" Click="Button_Click" Content="s">
-                
+            <Button Grid.Column="1" Click="Button_Click">
+                <Path Data="M5,5 10,5 20,10 0,10" Fill="Aqua" />
             </Button>
         </Grid>
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Records}">
+        <DataGrid x:Name="SearchResultGrid" Grid.Row="1" ItemsSource="{Binding Records,Mode=OneWay,IsAsync=True}"  EnableColumnVirtualization="True" EnableRowVirtualization="True">
             
         </DataGrid>
         <!--<DataGrid Grid.Row="2" ItemsSource="{Binding RecordDetails}">

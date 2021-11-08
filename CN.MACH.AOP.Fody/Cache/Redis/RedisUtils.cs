@@ -503,7 +503,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
             }
             catch (Exception ex)
             {
-                Logs.WriteExLog( ex, redisKey, " ", hashField);
+                Logs.WriteExLog( ex, redisKey, hashField);
             }
             return default(T);
         }
@@ -1172,10 +1172,13 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="handle"></param>
-        public void Subscribe(RedisChannel channel, Action<RedisChannel, RedisValue> handle)
+        public void Subscribe<T>(RedisChannel channel, Action<RedisChannel, T> handle)
         {
             var sub = _connMultiplexer.GetSubscriber();
-            sub.Subscribe(channel, handle);
+            sub.Subscribe(channel, (rc,rv)=>
+            {
+                handle(rc, Deserialize<T>(rv));
+            });
         }
 
         /// <summary>

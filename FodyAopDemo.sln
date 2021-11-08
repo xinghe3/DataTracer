@@ -11,6 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CN.MACH.AOP.Fody", "CN.MACH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CN.MACH.Aop.DataTracer", "CN.MACH.Aop.DataTracer\CN.MACH.Aop.DataTracer.csproj", "{292FF6A0-C96D-4C60-AA4A-805F31CCC96E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{19CA6AC5-E440-4666-88D0-D81A3DCE2EEB}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -1,0 +1,25 @@
+﻿<Window x:Class="CN.MACH.Aop.DataTracer.Views.SettingsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CN.MACH.Aop.DataTracer.Views"
+        mc:Ignorable="d"
+        Title="SettingsView" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="119*"/>
+            <ColumnDefinition Width="146*"/>
+            <ColumnDefinition Width="527*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="172*"/>
+            <RowDefinition Height="120*"/>
+            <RowDefinition Height="99*"/>
+        </Grid.RowDefinitions>
+        <Label Content="启动数据采集" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="82"/>
+        <CheckBox Content="启动" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Checked="CheckBox_Checked" Unloaded="CheckBox_Unloaded"/>
+
+    </Grid>
+</Window>

@@ -15,7 +15,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
     /// 目前调用 RedisHelper封装类实现功能
     /// 2018-04-18 14:15:27
     /// </summary>
-    public class RedisCacheProvider : ICacheProvider, IDisposable
+    public class RedisCacheProvider : ICacheProvider, IMQProvider, IDisposable
     {
         private static bool IsCache = true;
 
@@ -93,6 +93,19 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         public long Count(string key)
         {
             return _ru.HashLength(key);
+        }
+
+        public void Subscribe<T>(string topic, Action<T> action) where T : class
+        {
+            _ru.Subscribe<T>(topic, (rc, rv) =>
+             {
+                 action(rv as T);
+             });
+        }
+
+        public void Publish<T>(string topic, T msg) where T : class
+        {
+            _ru.Publish<T>(topic, msg);
         }
     }
 }
