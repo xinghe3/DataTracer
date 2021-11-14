@@ -1174,6 +1174,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <param name="handle"></param>
         public void Subscribe<T>(RedisChannel channel, Action<RedisChannel, T> handle)
         {
+            if (!IsConnMultiplexerConnected()) return;
             var sub = _connMultiplexer.GetSubscriber();
             sub.Subscribe(channel, (rc,rv)=>
             {
@@ -1189,6 +1190,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <returns></returns>
         public long Publish(RedisChannel channel, RedisValue message)
         {
+            if (!IsConnMultiplexerConnected()) return -1;
             var sub = _connMultiplexer.GetSubscriber();
             return sub.Publish(channel, message);
         }
@@ -1202,6 +1204,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <returns></returns>
         public long Publish<T>(RedisChannel channel, T message)
         {
+            if (!IsConnMultiplexerConnected()) return -1;
             var sub = _connMultiplexer.GetSubscriber();
             return sub.Publish(channel, Serialize(message));
         }

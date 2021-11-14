@@ -1,6 +1,7 @@
 ﻿using CN.MACH.AI.UnitTest.Core.Utils;
 using CN.MACH.AOP.Fody;
 using CN.MACH.AOP.Fody.Index;
+using CN.MACH.AOP.Fody.Models;
 using CN.MACH.AOP.Fody.Utils;
 using DC.ETL.Infrastructure.Cache;
 using DC.ETL.Infrastructure.Cache.Redis;
@@ -62,34 +63,45 @@ namespace FodyAopTool
             {
                 return;
             }
-            Type typeOfInstance = instance?.GetType()??null;
-            string instanceName = typeOfInstance?.FullName?? method.ReflectedType.Name;
-            StringBuilder sArgs = new StringBuilder();
+            Type typeOfInstance = instance?.GetType() ?? null;
+            SrcCodeRecordModel record = new SrcCodeRecordModel()
+            {
+                Params = new List<SrcCodeObjectModel>()
+            };
+            record.InstanceName = typeOfInstance?.FullName ?? method.ReflectedType.Name;
+            record.IsStatic = typeOfInstance?.FullName == null;
             if (args != null && args.Length > 0)
             {
                 foreach (object arg in args)
                 {
-                    if (sArgs.Length > 0) sArgs.Append(", ");
-                    sArgs.Append( ToParamJsonString(arg));
+                    record.Params.Add(new SrcCodeObjectModel()
+                    {
+                        Type = ToParamTypeString(arg),
+                        Value = ToParamJsonString(arg)
+                    });
                 }
             }
-            if(InitMethod.Name.Contains("set_"))// 属性
+            if (InitMethod.Name.Contains("set_"))// 设置属性
             {
-                string propertyName = InitMethod.Name.Replace("set_", "");
-                Log(instanceName + "." + propertyName + " = " + sArgs + ";");
+                record.PropertyName = InitMethod.Name.Replace("set_", "");
+                Log(record);
 
             }
-            else if (InitMethod.Name.Contains("get_"))// 属性
+            else if (InitMethod.Name.Contains("get_"))// 获取属性
             {
                 // 暂时不关心读取属性
             }
             else
             {
-                Log(instanceName + "." + InitMethod.Name + "(" + sArgs + ");");
+                record.MethodName = InitMethod.Name;
+                Log(record);
 
             }
         }
-
+        private static string ToParamTypeString(object arg)
+        {
+            return arg?.ToString() ?? "null";
+        }
         private static string ToParamJsonString(object arg)
         {
             if (arg == null) return "null";
@@ -127,16 +139,15 @@ namespace FodyAopTool
             // Log("Ex " + InitMethod.Name + " " + exception.Message);
         }
 
-        private void Log(string txt)
+        private void Log(SrcCodeRecordModel record)
         {
             string sID;
             lock(_lockID)
             {
                 sID = ID++.ToString();
             }
-            cacheProvider.Add(MgConstants.SrcCodeRecordKey, sID, txt);
-            cacheProvider.Add(MgConstants.SrcCodeThreadidKey, sID,
-                Thread.CurrentThread.ManagedThreadId);
+            cacheProvider.Add(MgConstants.SrcCodeRecordKey, sID, record);
+            cacheProvider.Add(MgConstants.SrcCodeThreadidKey, sID, Thread.CurrentThread.ManagedThreadId);
             // object obj = cacheProvider.Get("src:records", sID);
             // Logs.WriteLogFile("ThreadId:" + Thread.CurrentThread.ManagedThreadId + "\r\n" + txt, "FodyAopTool");
         }

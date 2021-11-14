@@ -16,12 +16,10 @@ namespace CN.MACH.AOP.Fody.Index
         public string Txt { get; set; }
     }
 
-    public class IndexSearcher
+    public class IndexSearcher : IndexBase
     {
-        private readonly ICacheProvider cacheProvider;
-        public IndexSearcher(ICacheProvider cacheProvider)
+        public IndexSearcher(ICacheProvider cacheProvider) : base(cacheProvider)
         {
-            this.cacheProvider = cacheProvider;
         }
 
         /// <summary>
@@ -54,8 +52,8 @@ namespace CN.MACH.AOP.Fody.Index
             foreach (int ID in IDs)
             {
                 int threadId = cacheProvider.Get<int>(MgConstants.SrcCodeThreadidKey, ID.ToString());
-                string code = cacheProvider.Get<string>(MgConstants.SrcCodeRecordKey, ID.ToString());
-                
+                string code = GetRecordCode(ID.ToString());
+
                 records.Add(new RecordInfo()
                 {
                     ID = ID, ThreadID = threadId, Txt = code

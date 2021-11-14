@@ -50,11 +50,13 @@
     <Compile Include="Cache\Redis\RedisCacheProvider.cs" />
     <Compile Include="Cache\Redis\RedisUtils.cs" />
     <Compile Include="Comparers\ByteArrayComparer.cs" />
+    <Compile Include="Index\IndexBase.cs" />
     <Compile Include="Index\IndexGenerator2.cs" />
     <Compile Include="Index\IndexGenerator.cs" />
     <Compile Include="Index\IndexSearcher.cs" />
     <Compile Include="Index\IndexSettings.cs" />
     <Compile Include="MgConstants.cs" />
+    <Compile Include="Models\SrcCodeRecordModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Attributes\TraceMethodAttribute.cs" />
     <Compile Include="Utils\CollectionUtils.cs" />

@@ -162,7 +162,8 @@ namespace CN.MACH.AOP.Fody.Utils
             return JsonConvert.SerializeObject(obj, Formatting.None,
                         new JsonSerializerSettings()
                         {
-                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                             // MaxDepth = 5,
                         });
         }
 

@@ -19,7 +19,7 @@
             <RowDefinition Height="99*"/>
         </Grid.RowDefinitions>
         <Label Content="启动数据采集" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="82"/>
-        <CheckBox Content="启动" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Checked="CheckBox_Checked" Unloaded="CheckBox_Unloaded"/>
+        <CheckBox Content="启动" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
 
     </Grid>
 </Window>

@@ -43,9 +43,9 @@ namespace CN.MACH.Aop.DataTracer.Views
             indexSettings.Update();
         }
 
-        private void CheckBox_Unloaded(object sender, RoutedEventArgs e)
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            indexSettings.indexOptions.IsRecord = true;
+            indexSettings.indexOptions.IsRecord = false;
             indexSettings.Update();
         }
     }

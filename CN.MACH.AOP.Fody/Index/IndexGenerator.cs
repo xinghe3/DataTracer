@@ -1,4 +1,5 @@
-﻿using CN.MACH.AOP.Fody.Utils;
+﻿using CN.MACH.AOP.Fody.Models;
+using CN.MACH.AOP.Fody.Utils;
 using DC.ETL.Infrastructure.Cache;
 using System;
 using System.Collections.Generic;
@@ -44,12 +45,10 @@ namespace CN.MACH.AOP.Fody.Index
         }
     }
 
-    public class IndexGenerator
+    public class IndexGenerator : IndexBase
     {
-        private readonly ICacheProvider cacheProvider;
-        public IndexGenerator(ICacheProvider cacheProvider)
+        public IndexGenerator(ICacheProvider cacheProvider) : base(cacheProvider)
         {
-            this.cacheProvider = cacheProvider;
         }
 
         public Action<int, long> ProcessNotice { get; set; }
@@ -65,14 +64,15 @@ namespace CN.MACH.AOP.Fody.Index
             do
             {
                 string sID = nID++.ToString();
-                code = cacheProvider.Get<string>(MgConstants.SrcCodeRecordKey, sID);
+                code = GetRecordCode(sID);
                 //if (nID > 10000)
                 //    break;
                 if (string.IsNullOrEmpty(code))
                     continue;
                 //threadId = cacheProvider.Get<int>(MgConstants.SrcCodeThreadidKey, sID);
                 InvertedIndex.Init(indexes, code, int.Parse(sID));
-                ProcessNotice(nID, cnt);
+                if (nID % 50 == 0)
+                    ProcessNotice(nID, cnt);
             } while (nID < cnt);
 
             // save to cache.
@@ -82,5 +82,6 @@ namespace CN.MACH.AOP.Fody.Index
                 cacheProvider.Add(MgConstants.IndexDocListKey, word, index.Value);
             }
         }
+
     }
 }
