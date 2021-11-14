@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CN.MACH.AOP.Fody.Models
 {
     [Serializable]
-    class SrcCodeRecordModel
+    public class SrcCodeRecordModel
     {
         public string InstanceName { get; internal set; }
         public bool IsStatic { get; internal set; }
@@ -17,7 +17,7 @@ namespace CN.MACH.AOP.Fody.Models
         public string PropertyName { get; internal set; }
     }
     [Serializable]
-    class SrcCodeObjectModel
+    public class SrcCodeObjectModel
     {
         public string Type { get; set; }
         public string Value { get; set; }

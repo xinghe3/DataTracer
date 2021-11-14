@@ -1,0 +1,26 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:WpfBlendTest1.FuncCallView"
+	mc:Ignorable="d"
+	x:Class="WpfBlendTest1.FuncCallView.JsonView"
+	x:Name="ucJson"
+	d:DesignWidth="640" d:DesignHeight="480">
+    <UserControl.Resources>
+        <local:JsonValueConverter x:Key="jsonValueConverter"/>
+    </UserControl.Resources>
+    <TreeView ItemsSource="{Binding JsonString,ElementName=ucJson, Converter={StaticResource jsonValueConverter}}">
+        <TreeView.ItemTemplate>
+            <HierarchicalDataTemplate ItemsSource ="{Binding Children}">
+                <StackPanel Orientation = "Horizontal">
+                    <!-- 显示Header属性 -->
+                    <TextBlock Text ="{Binding Header}"/>
+                    <!-- 显示JToken的Type属性 -->
+                    <TextBlock Text ="{Binding Token.Type}" Margin = "10 0 0 0" Foreground="Gray"/>
+                </StackPanel>
+            </HierarchicalDataTemplate>
+        </TreeView.ItemTemplate>
+    </TreeView >
+</UserControl>

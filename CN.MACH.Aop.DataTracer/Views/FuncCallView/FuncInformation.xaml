@@ -1,0 +1,83 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfBlendTest1.FuncCallView"
+             x:Class="WpfBlendTest1.FuncCallView.FuncInformation"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+	<UserControl.Resources>
+        <!--触发器-->
+        <Style x:Key="expandParams" TargetType="ListBox">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChecked,ElementName=functionNamePart}" Value="False">
+                    <Setter Property="Visibility"  Value="Hidden" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="expandSingleParamRow" TargetType="RowDefinition">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChecked,ElementName=singleParamType}" Value="False">
+                    <Setter Property="Height"  Value="1" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="expandJsonParamRow" TargetType="RowDefinition">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChecked,ElementName=jsonParamType}" Value="False">
+                    <Setter Property="Height"  Value="1" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="expandJsonParamVisible" TargetType="local:JsonView">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChecked,ElementName=jsonParamType}" Value="False">
+                    <Setter Property="Visibility"  Value="Hidden" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="expandSingleParamVisible" TargetType="Label">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChecked,ElementName=singleParamType}" Value="False">
+                    <Setter Property="Visibility"  Value="Hidden" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <ItemsPanelTemplate x:Key="FunctionParamsItemsPanelTemplate">
+            <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal" />
+		</ItemsPanelTemplate>
+        <local:FuncParamDataTemplateSelector x:Key="paramDataTemplateSelector"/>
+		<DataTemplate x:Key="singleParamDataTemplate">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Style="{StaticResource expandSingleParamRow}"/>
+                </Grid.RowDefinitions>
+                <CheckBox x:Name="singleParamType" Content="{Binding Type}" />
+                <Label Grid.Row="1"  Content="{Binding Value}"  Style="{StaticResource expandSingleParamVisible}" />
+                
+            </Grid>
+		</DataTemplate>
+		<DataTemplate x:Key="jsonParamDataTemplate">
+			<Grid>
+				<Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Style="{StaticResource expandJsonParamRow}"/>
+				</Grid.RowDefinitions>
+                <CheckBox x:Name="jsonParamType" Content="{Binding Type}" />
+                <local:JsonView Grid.Row="1" JsonString="{Binding Value}"  Style="{StaticResource expandJsonParamVisible}" />
+				
+			</Grid>
+		</DataTemplate>
+
+    </UserControl.Resources>
+	<StackPanel Orientation="Horizontal">
+        <CheckBox x:Name="functionNamePart" Content="{Binding Name}" />
+        <ListBox x:Name="functionParamsPart" Style="{StaticResource ResourceKey=expandParams}"
+                 ItemsSource="{Binding Params}" ItemsPanel="{DynamicResource FunctionParamsItemsPanelTemplate}" ItemTemplateSelector="{StaticResource paramDataTemplateSelector}"
+                  >
+		</ListBox>
+            
+	</StackPanel>
+</UserControl>

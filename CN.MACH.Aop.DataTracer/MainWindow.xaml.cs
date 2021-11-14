@@ -5,6 +5,7 @@ using DC.ETL.Infrastructure.Cache.Redis;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,7 +55,6 @@ namespace CN.MACH.Aop.DataTracer
             {
                 indexGenerator.Build();
             });
-
         }
 
         private void IndexGenerateProcessDisplay(int n, long max)
@@ -93,6 +93,14 @@ namespace CN.MACH.Aop.DataTracer
             {
                 Search();
             }
+        }
+
+        private void SearchResultGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            RecordInfo mySelectedElement = (RecordInfo)SearchResultGrid.SelectedItem;
+            int result = mySelectedElement.ID;
+            FuncCallDetailsView funcCallDetailsView = new FuncCallDetailsView();
+            funcCallDetailsView.ShowFuncCallDetails(result);
         }
     }
 }

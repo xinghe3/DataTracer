@@ -1,4 +1,5 @@
 ﻿using CN.MACH.AI.UnitTest.Core.Utils;
+using CN.MACH.AOP.Fody.Models;
 using DC.ETL.Infrastructure.Cache;
 using DC.ETL.Infrastructure.Cache.Redis;
 using System;
@@ -14,6 +15,11 @@ namespace CN.MACH.AOP.Fody.Index
         public int ID { get; set; }
         public int ThreadID { get; set; }
         public string Txt { get; set; }
+    }
+    public class RecordDetailInfo : SrcCodeRecordModel
+    {
+        public int ID { get; set; }
+        public int ThreadID { get; set; }
     }
 
     public class IndexSearcher : IndexBase
@@ -60,6 +66,26 @@ namespace CN.MACH.AOP.Fody.Index
                 });
             }
             return records;
+        }
+
+        public List<RecordDetailInfo> Search(int startIndex, int endIndex)
+        {
+            List<RecordDetailInfo> records = new List<RecordDetailInfo>();
+            for (int ID = startIndex; ID <= endIndex; ID++)
+            {
+                int threadId = cacheProvider.Get<int>(MgConstants.SrcCodeThreadidKey, ID.ToString());
+                SrcCodeRecordModel record = cacheProvider.Get<SrcCodeRecordModel>(MgConstants.SrcCodeRecordKey, ID.ToString());
+                RecordDetailInfo recordDetailInfo = new RecordDetailInfo();
+                recordDetailInfo.InstanceName = record.InstanceName;
+                recordDetailInfo.PropertyName = record.PropertyName;
+                recordDetailInfo.MethodName = record.MethodName;
+                recordDetailInfo.Params = record.Params;
+                recordDetailInfo.ID = ID;
+                recordDetailInfo.ThreadID = threadId;
+                records.Add(recordDetailInfo);
+            }
+            return records;
+
         }
     }
 }

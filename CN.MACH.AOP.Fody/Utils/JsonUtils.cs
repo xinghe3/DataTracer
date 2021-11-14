@@ -70,6 +70,10 @@ namespace CN.MACH.AOP.Fody.Utils
             }
             return ErrorCode.Success;
         }
+        public static bool IsJson(string jsonText)
+        {
+            return IsJsonObject(jsonText) || IsJsonArray(jsonText);
+        }
         private static bool IsJsonObject(string jsonText)
         {
             if (string.IsNullOrWhiteSpace(jsonText)) return false;

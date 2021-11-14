@@ -23,7 +23,7 @@
                 <Path Data="M5,5 10,5 20,10 0,10" Fill="Aqua" />
             </Button>
         </Grid>
-        <DataGrid x:Name="SearchResultGrid" Grid.Row="1" ItemsSource="{Binding Records,Mode=OneWay,IsAsync=True}"  EnableColumnVirtualization="True" EnableRowVirtualization="True">
+        <DataGrid x:Name="SearchResultGrid" Grid.Row="1" ItemsSource="{Binding Records,Mode=OneWay,IsAsync=True}"  EnableColumnVirtualization="True" EnableRowVirtualization="True" MouseDoubleClick="SearchResultGrid_MouseDoubleClick">
             
         </DataGrid>
         <!--<DataGrid Grid.Row="2" ItemsSource="{Binding RecordDetails}">
