@@ -11,6 +11,9 @@ using System.Runtime.Serialization;
 using System.Data;
 using CN.MACH.AI.UnitTest.Core.Utils;
 using CN.MACH.AI.Cache;
+using static CSRedis.CSRedisClient;
+using System.Collections.Concurrent;
+using System.Threading;
 
 namespace DC.ETL.Infrastructure.Cache.Redis
 {
@@ -44,6 +47,11 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// </summary>
         private bool _IsDisposable = true;
 
+
+        private List<(string, Action<SubscribeMessageEventArgs>)> subScribes;
+
+        private ConcurrentQueue<Action> actionQueus = new ConcurrentQueue<Action>();
+
         /// <summary>
         /// 获取 Redis 连接对象
         /// </summary>
@@ -58,10 +66,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         }
 
         #region 构造函数资源释放
-        static CSRedisUtils()
-        {
-            AddRegisterEvent();
-        }
+
 
         /// <summary>
         /// 构造函数
@@ -71,6 +76,20 @@ namespace DC.ETL.Infrastructure.Cache.Redis
             DefaultKey = cacheSetting.PefixKey;
             this.cacheSetting = cacheSetting;
             _redisClient = GetConnectionRedis(cacheSetting);
+            AddRegisterEvent();
+            // RedisHelper.Initialization(_redisClient);
+            subScribes = new List<(string, Action<SubscribeMessageEventArgs>)>();
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    if (actionQueus.Count > 0 && actionQueus.TryDequeue(out var action))
+                    {
+                        action.Invoke();
+                    }
+                    Thread.Sleep(1000);
+                }
+            });
         }
 
         /// <summary>
@@ -176,26 +195,26 @@ namespace DC.ETL.Infrastructure.Cache.Redis
 
         //#region async
 
-        ///// <summary>
-        ///// 保存一个字符串值
-        ///// </summary>
-        ///// <param name="redisKey"></param>
-        ///// <param name="redisValue"></param>
-        ///// <param name="expiry"></param>
-        ///// <returns></returns>
-        //public async Task<bool> StringSetAsync(string redisKey, string redisValue, TimeSpan? expiry = null)
-        //{
-        //    redisKey = AddKeyPrefix(redisKey);
-        //    if (expiry == null)
-        //    {
-        //        result = _redisClient.Set(redisKey, redisValue);
-        //    }
-        //    else
-        //    {
-        //        result = _redisClient.Set(redisKey, redisValue, (TimeSpan)expiry);
-        //    }
-        //    return await _redisClient.SetAsync(redisKey, redisValue, expiry);
-        //}
+        /// <summary>
+        /// 保存一个字符串值
+        /// </summary>
+        /// <param name="redisKey"></param>
+        /// <param name="redisValue"></param>
+        /// <param name="expiry"></param>
+        /// <returns></returns>
+        public async Task<bool> StringSetAsync(string redisKey, string redisValue, TimeSpan? expiry = null)
+        {
+            redisKey = AddKeyPrefix(redisKey);
+            if (expiry == null)
+            {
+                await _redisClient.SetAsync(redisKey, redisValue);
+            }
+            else
+            {
+                await _redisClient.SetAsync(redisKey, redisValue, (TimeSpan)expiry);
+            }
+            return true;
+        }
 
         ///// <summary>
         ///// 保存一组字符串值
@@ -252,7 +271,22 @@ namespace DC.ETL.Infrastructure.Cache.Redis
 
         #endregion String 操作
 
-        //#region Hash 操作
+        #region Hash 操作
+
+
+        public long HashLength(string redisKey)
+        {
+            redisKey = AddKeyPrefix(redisKey);
+            try
+            {
+                return _redisClient.HLen(redisKey);
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteExLog(ex, redisKey);
+            }
+            return -1;
+        }
 
         ///// <summary>
         ///// 判断该字段是否存在 hash 中
@@ -597,7 +631,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
 
         //#endregion async
 
-        //#endregion Hash 操作
+        #endregion Hash 操作
 
         //#region List 操作
 
@@ -1115,6 +1149,21 @@ namespace DC.ETL.Infrastructure.Cache.Redis
 
         //#region 发布订阅
 
+        /// <summary>
+        /// 订阅
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="handle"></param>
+        public void Subscribe<T>(string channel, Action<T> action)
+        {
+            var actionObj = new Action<SubscribeMessageEventArgs>(msg =>
+            {
+                var t = Deserialize<T>(msg.Body);
+                action(t);
+            });
+            subScribes.Add((channel, actionObj));
+        }
+
         ///// <summary>
         ///// 订阅
         ///// </summary>
@@ -1138,18 +1187,27 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         //    return sub.Publish(channel, message);
         //}
 
-        ///// <summary>
-        ///// 发布（使用序列化）
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="channel"></param>
-        ///// <param name="message"></param>
-        ///// <returns></returns>
-        //public long Publish<T>(RedisChannel channel, T message)
-        //{
-        //    var sub = _connMultiplexer.GetSubscriber();
-        //    return sub.Publish(channel, Serialize(message));
-        //}
+        /// <summary>
+        /// 发布（使用序列化）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="channel"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public long Publish<T>(string channel, T message)
+        {
+            var msgStr = "";
+            try
+            {
+                msgStr = Serialize(message);
+                return _redisClient.Publish(channel, msgStr);
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteExLog(ex);
+            }
+            return -1;
+        }
 
         //#region 发布订阅-async
 

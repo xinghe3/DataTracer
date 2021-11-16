@@ -19,12 +19,7 @@ namespace FodyAopTool
     [AttributeUsage(AttributeTargets.All)] //可以分为对属性，方法，域等注解，all就是全部都注解
     public class TraceTargetAttribute : Attribute
     {
-        private static ICacheProvider cacheProvider = new RedisCacheProvider(
-                new CN.MACH.AI.Cache.CacheSetting()
-                {
-                     Connection = "127.0.0.1", Port = 6379, PefixKey = "zbytest:"
-                }
-            );
+        private static ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
         public static bool IsRecord = false;
         private static int ID = 0;
         private object _lockID = new object();
@@ -56,13 +51,19 @@ namespace FodyAopTool
             }
 
             InitMethod = method;
-            InitInstance = instance;
-            Args = args;
             
             if (InitMethod.Name == ".ctor" ||InitMethod.Name == ".cctor")// 构造函数
             {
                 return;
             }
+            else if (InitMethod.Name.StartsWith("get_"))// 获取属性
+            {
+                // 暂时不关心读取属性
+                return;
+            }
+            InitInstance = instance;
+            Args = args;
+
             Type typeOfInstance = instance?.GetType() ?? null;
             SrcCodeRecordModel record = new SrcCodeRecordModel()
             {
@@ -87,10 +88,7 @@ namespace FodyAopTool
                 Log(record);
 
             }
-            else if (InitMethod.Name.Contains("get_"))// 获取属性
-            {
-                // 暂时不关心读取属性
-            }
+
             else
             {
                 record.MethodName = InitMethod.Name;
@@ -146,8 +144,8 @@ namespace FodyAopTool
             {
                 sID = ID++.ToString();
             }
-            cacheProvider.Add(MgConstants.SrcCodeRecordKey, sID, record);
-            cacheProvider.Add(MgConstants.SrcCodeThreadidKey, sID, Thread.CurrentThread.ManagedThreadId);
+            //cacheProvider.Add(MgConstants.SrcCodeRecordKey, sID, record);
+            //cacheProvider.Add(MgConstants.SrcCodeThreadidKey, sID, Thread.CurrentThread.ManagedThreadId);
             // object obj = cacheProvider.Get("src:records", sID);
             // Logs.WriteLogFile("ThreadId:" + Thread.CurrentThread.ManagedThreadId + "\r\n" + txt, "FodyAopTool");
         }

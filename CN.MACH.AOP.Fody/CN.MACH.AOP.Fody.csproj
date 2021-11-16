@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cache\CacheFactory.cs" />
+    <Compile Include="Cache\FodyCacheManager.cs" />
     <Compile Include="Cache\CacheSetting.cs" />
     <Compile Include="Cache\CSRedis\CSRedisCacheProvider.cs" />
     <Compile Include="Cache\CSRedis\CSRedisUtils.cs" />

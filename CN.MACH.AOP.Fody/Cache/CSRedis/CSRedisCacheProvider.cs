@@ -15,7 +15,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
     /// 目前调用 RedisHelper封装类实现功能
     /// 2018-04-18 14:15:27
     /// </summary>
-    public class CSRedisCacheProvider : ICacheProvider, IDisposable
+    public class CSRedisCacheProvider : ICacheProvider, IMQProvider, IDisposable
     {
         private static bool IsCache = true;
 
@@ -52,19 +52,19 @@ namespace DC.ETL.Infrastructure.Cache.Redis
 
         public void Add<T>(string key, string valueKey, T value)
         {
-            _ru.StringSet<T>(key, value);
-            //bool b = _ru.HashSet<object>(key, valueKey, value);
+            //_ru.StringSet<T>(key, value);
+            bool b = _ru.HashSet<object>(key, valueKey, value);
         }
 
         public void Update(string key, string valueKey, object value)
         {
-            //bool b = _ru.HashSet<object>(key, valueKey, value);
+            bool b = _ru.HashSet<object>(key, valueKey, value);
         }
 
         public T Get<T>(string key, string valueKey)
         {
-            return _ru.StringGet<T>(key);
-            //return _ru.HashGet<object>(key, valueKey);
+            //return _ru.StringGet<T>(key);
+            return _ru.HashGet<T>(key, valueKey);
         }
 
         public void Remove(string key)
@@ -97,7 +97,17 @@ namespace DC.ETL.Infrastructure.Cache.Redis
 
         public long Count(string key)
         {
-            throw new NotImplementedException();
+            return _ru.HashLength(key);
+        }
+
+        public void Subscribe<T>(string topic, Action<T> action) where T : class
+        {
+            _ru.Subscribe(topic, action);
+        }
+
+        public void Publish<T>(string topic, T msg) where T : class
+        {
+            _ru.Publish(topic, msg);
         }
     }
 }
