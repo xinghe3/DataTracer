@@ -35,7 +35,8 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <summary>
         /// redis 连接对象
         /// </summary>
-        private static RedisClient _redisClient;
+        // private static RedisClient _redisClient;
+        private static CSRedisClient _redisClient;
 
         /// <summary>
         /// 默认的 Key 值（用来当作 RedisKey 的前缀）
@@ -56,11 +57,11 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// 获取 Redis 连接对象
         /// </summary>
         /// <returns></returns>
-        public RedisClient GetConnectionRedis(CacheSetting cacheSetting)
+        public CSRedisClient GetConnectionRedis(CacheSetting cacheSetting)
         {
-            if ((_redisClient == null) || !_redisClient.IsConnected)
+            if (_redisClient == null)
             {
-                _redisClient = new RedisClient(cacheSetting.Connection, cacheSetting.Port);
+                _redisClient = new CSRedisClient(cacheSetting.GetConnectionString());
             }
             return _redisClient;
         }
@@ -133,10 +134,10 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <param name="redisValue"></param>
         /// <param name="expiry"></param>
         /// <returns></returns>
-        public string StringSet(string redisKey, object redisValue, TimeSpan? expiry = null)
+        public bool StringSet(string redisKey, object redisValue, TimeSpan? expiry = null)
         {
             redisKey = AddKeyPrefix(redisKey);
-            string result = string.Empty;
+            bool result = false;
             if (expiry == null)
             {
                 result = _redisClient.Set(redisKey, redisValue);
@@ -166,11 +167,11 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <param name="redisValue"></param>
         /// <param name="expiry"></param>
         /// <returns></returns>
-        public string StringSet<T>(string redisKey, T redisValue, TimeSpan? expiry = null)
+        public bool StringSet<T>(string redisKey, T redisValue, TimeSpan? expiry = null)
         {
             redisKey = AddKeyPrefix(redisKey);
             var json = Serialize(redisValue);
-            string result = string.Empty;
+            bool result = false;
             if (expiry == null)
             {
                 result = _redisClient.Set(redisKey, json);
@@ -386,18 +387,49 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         //        Logs.WriteExLog( ex, redisKey);
         //    }
         //}
+        /// <summary>
+        /// 在 hash 设定值（序列化）
+        /// </summary>
+        /// <param name="redisKey"></param>
+        /// <param name="hashField"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool HashSet(string redisKey, string hashField, string value)
+        {
+            redisKey = AddKeyPrefix(redisKey);
+            try
+            {
+                var json = Serialize(value);
+                return _redisClient.HSet(redisKey, hashField, json);
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteExLog(ex, redisKey, hashField);
+            }
+            return false;
+        }
 
-        ///// <summary>
-        ///// 在 hash 中获取值
-        ///// </summary>
-        ///// <param name="redisKey"></param>
-        ///// <param name="hashField"></param>
-        ///// <returns></returns>
-        //public RedisValue HashGet(string redisKey, string hashField)
-        //{
-        //    redisKey = AddKeyPrefix(redisKey);
-        //    return GetDB().HashGet(redisKey, hashField);
-        //}
+        /// <summary>
+        /// 在 hash 中获取值（反序列化）
+        /// </summary>
+        /// <param name="redisKey"></param>
+        /// <param name="hashField"></param>
+        /// <returns></returns>
+        public object HashGet(string redisKey, string hashField)
+        {
+            redisKey = AddKeyPrefix(redisKey);
+            try
+            {
+                var result = _redisClient.HGet(redisKey, hashField);
+                object o = Deserialize(result);
+                return o;
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteExLog(ex, redisKey, " ", hashField);
+            }
+            return null;
+        }
 
         ///// <summary>
         ///// 在 hash 中获取值
@@ -462,8 +494,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
             redisKey = AddKeyPrefix(redisKey);
             try
             {
-                var json = Serialize(value);
-                return _redisClient.HSet(redisKey, hashField, json);
+                return _redisClient.HSet(redisKey, hashField, value);
             }
             catch (Exception ex)
             {
@@ -483,9 +514,8 @@ namespace DC.ETL.Infrastructure.Cache.Redis
             redisKey = AddKeyPrefix(redisKey);
             try
             {
-                var result = _redisClient.HGet(redisKey, hashField);
-                object o = Deserialize<T>(result);
-                return (T)o;
+                var result = _redisClient.HGet<T>(redisKey, hashField);
+                return result;
             }
             catch (Exception ex)
             {
@@ -1270,10 +1300,10 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// </summary>
         private static void AddRegisterEvent()
         {
-            _redisClient.TransactionQueued += RedisClient_TransactionQueued;
-            _redisClient.SubscriptionChanged += RedisClient_SubscriptionChanged;
-            _redisClient.SubscriptionReceived += RedisClient_SubscriptionReceived;
-            _redisClient.MonitorReceived += RedisClient_MonitorReceived;
+            //_redisClient.TransactionQueued += RedisClient_TransactionQueued;
+            //_redisClient.SubscriptionChanged += RedisClient_SubscriptionChanged;
+            //_redisClient.SubscriptionReceived += RedisClient_SubscriptionReceived;
+            //_redisClient.MonitorReceived += RedisClient_MonitorReceived;
         }
 
         /// <summary>
@@ -1359,6 +1389,25 @@ namespace DC.ETL.Infrastructure.Cache.Redis
             }
         }
 
+        /// <summary>
+        /// 反序列化
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        private static object Deserialize(string json)
+        {
+            if (json == null)
+                return null;
+
+            var binaryFormatter = new BinaryFormatter();
+            //var serializer = new DataContractJsonSerializer(typeof(T));
+            using (var memoryStream = new MemoryStream(Convert.FromBase64String(json)))
+            {
+                //var result = (T)serializer.ReadObject(memoryStream);
+                return binaryFormatter.Deserialize(memoryStream);
+            }
+        }
         #endregion private method
     }
 }

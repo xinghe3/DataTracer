@@ -1,28 +1,23 @@
-﻿using CN.MACH.AI.UnitTest.Core.Utils;
-using CN.MACH.AOP.Fody;
+﻿using CN.MACH.AOP.Fody;
 using CN.MACH.AOP.Fody.Index;
 using CN.MACH.AOP.Fody.Models;
 using CN.MACH.AOP.Fody.Utils;
 using DC.ETL.Infrastructure.Cache;
-using DC.ETL.Infrastructure.Cache.Redis;
 using FodyAopTool;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 [module: TraceTarget]  //相当于注册类
 namespace FodyAopTool
 {
     [AttributeUsage(AttributeTargets.All)] //可以分为对属性，方法，域等注解，all就是全部都注解
     public class TraceTargetAttribute : Attribute
     {
-        private static ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
+        private static readonly ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
         public static bool IsRecord = false;
         private static int ID = 0;
-        private object _lockID = new object();
+        private readonly object _lockID = new object();
 
         protected object InitInstance;
 
@@ -144,11 +139,21 @@ namespace FodyAopTool
             {
                 sID = ID++.ToString();
             }
-            //cacheProvider.Add(MgConstants.SrcCodeRecordKey, sID, record);
+            record.ThreadID = Thread.CurrentThread.ManagedThreadId;
+            cacheProvider.Add(MgConstants.SrcCodeRecordKey, sID, record);
             //cacheProvider.Add(MgConstants.SrcCodeThreadidKey, sID, Thread.CurrentThread.ManagedThreadId);
             // object obj = cacheProvider.Get("src:records", sID);
             // Logs.WriteLogFile("ThreadId:" + Thread.CurrentThread.ManagedThreadId + "\r\n" + txt, "FodyAopTool");
         }
+        /// <summary>
+        /// 分离连接缓存保存数据线程
+        /// </summary>
+        class SrcCodeRecorder
+        {
+            public static void Init()
+            {
 
+            }
+        }
     }
 }

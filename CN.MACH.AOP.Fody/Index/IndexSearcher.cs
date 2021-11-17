@@ -19,7 +19,7 @@ namespace CN.MACH.AOP.Fody.Index
     public class RecordDetailInfo : SrcCodeRecordModel
     {
         public int ID { get; set; }
-        public int ThreadID { get; set; }
+        // public int ThreadID { get; set; }
     }
 
     public class IndexSearcher : IndexBase

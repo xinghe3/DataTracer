@@ -53,7 +53,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         public void Add<T>(string key, string valueKey, T value)
         {
             //_ru.StringSet<T>(key, value);
-            bool b = _ru.HashSet<object>(key, valueKey, value);
+            bool b = _ru.HashSet<T>(key, valueKey, value);
         }
 
         public void Update(string key, string valueKey, object value)

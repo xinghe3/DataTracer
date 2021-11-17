@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FodyAopTool;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace FodyAopDemo
     {
         static void Main(string[] args)
         {
-            // StringUtils.IsEmptyOrSpace("");
+            TraceTargetAttribute.IsRecord = true;
             Console.WriteLine("TargetCaller in target lib will excute aop.");
             TargetCaller targetCaller = new TargetCaller();
             int n = targetCaller.DoSomeThing(1,3);

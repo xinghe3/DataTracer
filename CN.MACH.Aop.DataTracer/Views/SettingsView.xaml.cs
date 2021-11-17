@@ -22,14 +22,7 @@ namespace CN.MACH.Aop.DataTracer.Views
     /// </summary>
     public partial class SettingsView : Window
     {
-        private readonly ICacheProvider cacheProvider = new RedisCacheProvider(
-            new CN.MACH.AI.Cache.CacheSetting()
-            {
-                Connection = "127.0.0.1",
-                Port = 6379,
-                PefixKey = "zbytest:"
-            }
-        );
+        private readonly ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
         private IndexSettings indexSettings;
         public SettingsView()
         {

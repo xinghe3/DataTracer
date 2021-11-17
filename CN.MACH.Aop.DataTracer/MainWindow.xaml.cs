@@ -26,14 +26,7 @@ namespace CN.MACH.Aop.DataTracer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly ICacheProvider cacheProvider = new RedisCacheProvider(
-            new CN.MACH.AI.Cache.CacheSetting()
-            {
-                Connection = "127.0.0.1",
-                Port = 6379,
-                PefixKey = "zbytest:"
-            }
-        );
+        private readonly ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
         private ObservableCollection<RecordInfo> records = new ObservableCollection<RecordInfo>();
 
         public ObservableCollection<RecordInfo> Records

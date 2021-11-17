@@ -9,6 +9,7 @@ namespace CN.MACH.AOP.Fody.Models
     [Serializable]
     public class SrcCodeRecordModel
     {
+        public int ThreadID { get; internal set; }
         public string InstanceName { get; internal set; }
         public bool IsStatic { get; internal set; }
         public string MethodName { get; internal set; }
