@@ -1,4 +1,5 @@
-﻿using CN.MACH.AOP.Fody.Index;
+﻿using CN.MACH.AI.Cache;
+using CN.MACH.AOP.Fody.Index;
 using DC.ETL.Infrastructure.Cache;
 using DC.ETL.Infrastructure.Cache.Redis;
 using System;
@@ -22,11 +23,37 @@ namespace CN.MACH.Aop.DataTracer.Views
     /// </summary>
     public partial class SettingsView : Window
     {
-        private readonly ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
+        private ICacheProvider cacheProvider = null;
         private IndexSettings indexSettings;
+
+
+
+
+
+        public CacheSetting CacheSettings
+        {
+            get { return (CacheSetting)GetValue(CacheSettingsProperty); }
+            set { SetValue(CacheSettingsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CacheSettings.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CacheSettingsProperty =
+            DependencyProperty.Register("CacheSettings", typeof(CacheSetting), typeof(SettingsView), new PropertyMetadata(null));
+
+
+
+
         public SettingsView()
         {
             InitializeComponent();
+            DataContext = this;
+            CacheSettings  = new CacheSetting()
+            {
+                Connection = "127.0.0.1",
+                Port = 6379,
+                PefixKey = "zbytest:"
+            };
+            cacheProvider = FodyCacheManager.GetInterface(CacheSettings);
             indexSettings = new IndexSettings(cacheProvider);
         }
 
@@ -40,6 +67,13 @@ namespace CN.MACH.Aop.DataTracer.Views
         {
             indexSettings.indexOptions.IsRecord = false;
             indexSettings.Update();
+        }
+
+        private void Apply_Click(object sender, RoutedEventArgs e)
+        {
+            CacheSettings.IsChangeToNewServer = true;
+            cacheProvider = FodyCacheManager.GetInterface(CacheSettings);
+            MessageBox.Show("应用更改");
         }
     }
 }

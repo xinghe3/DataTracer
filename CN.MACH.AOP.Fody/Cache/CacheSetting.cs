@@ -8,6 +8,7 @@ namespace CN.MACH.AI.Cache
 {
     public class CacheSetting
     {
+        public bool IsChangeToNewServer { get; set; }
         public string Connection { get; set; }
         public int Port { get; set; }
         public string PefixKey { get; set; }

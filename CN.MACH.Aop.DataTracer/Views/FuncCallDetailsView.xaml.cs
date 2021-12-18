@@ -25,7 +25,7 @@ namespace CN.MACH.Aop.DataTracer.Views
     /// </summary>
     public partial class FuncCallDetailsView : Window
     {
-        private readonly ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
+        private readonly ICacheProvider cacheProvider = null;
 
         public ObservableCollection<FuncModel> Funcs { get; set; }
 
@@ -33,6 +33,7 @@ namespace CN.MACH.Aop.DataTracer.Views
         {
             InitializeComponent();
             Funcs = new ObservableCollection<FuncModel>();
+            cacheProvider = FodyCacheManager.GetInterface();
         }
 
         public void ShowFuncCallDetails(int id)

@@ -28,12 +28,13 @@ namespace CN.MACH.AOP.Fody.Index
                 sb.Append(record.PropertyName);
                 sb.Append("=");
                 int index = 0;
-                foreach (var param in record.Params)
-                {
-                    if (index > 0) sb.Append(",");
-                    sb.Append(param.Value);
-                    index++;
-                }
+                if (record.Params != null)
+                    foreach (var param in record.Params)
+                    {
+                        if (index > 0) sb.Append(",");
+                        sb.Append(param.Value);
+                        index++;
+                    }
             }
             else
             {
@@ -41,12 +42,13 @@ namespace CN.MACH.AOP.Fody.Index
                 sb.Append(record.MethodName);
                 sb.Append("(");
                 int index = 0;
-                foreach (var param in record.Params)
-                {
-                    if (index > 0) sb.Append(",");
-                    sb.Append(param.Value);
-                    index++;
-                }
+                if (record.Params != null)
+                    foreach (var param in record.Params)
+                    {
+                        if (index > 0) sb.Append(",");
+                        sb.Append(param.Value);
+                        index++;
+                    }
                 sb.Append(");");
 
             }

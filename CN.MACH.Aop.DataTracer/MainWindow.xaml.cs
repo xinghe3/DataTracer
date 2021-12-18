@@ -1,4 +1,6 @@
 ﻿using CN.MACH.Aop.DataTracer.Views;
+using CN.MACH.Aop.DataTracer.Views.Redis;
+using CN.MACH.Aop.DataTracer.Views.Tracer;
 using CN.MACH.AOP.Fody.Index;
 using DC.ETL.Infrastructure.Cache;
 using DC.ETL.Infrastructure.Cache.Redis;
@@ -26,14 +28,14 @@ namespace CN.MACH.Aop.DataTracer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
-        private ObservableCollection<RecordInfo> records = new ObservableCollection<RecordInfo>();
+        //private readonly ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
+        //private ObservableCollection<RecordInfo> records = new ObservableCollection<RecordInfo>();
 
-        public ObservableCollection<RecordInfo> Records
-        {
-            get { return records; }
-            set { records = value; }
-        }
+        //public ObservableCollection<RecordInfo> Records
+        //{
+        //    get { return records; }
+        //    set { records = value; }
+        //}
         // 但他本身就是语句 再查什么细节呢??? 先不管 看看需不需要展开表操作 还需要各个代码路径
 
 
@@ -42,58 +44,71 @@ namespace CN.MACH.Aop.DataTracer
         {
             InitializeComponent();
             DataContext = this;
-            IndexGenerator indexGenerator = new IndexGenerator(cacheProvider);
-            indexGenerator.ProcessNotice = IndexGenerateProcessDisplay;
-            Task.Run(() =>
-            {
-                indexGenerator.Build();
-            });
+            //IndexGenerator indexGenerator = new IndexGenerator(cacheProvider);
+            //indexGenerator.ProcessNotice = IndexGenerateProcessDisplay;
+            //Task.Run(() =>
+            //{
+            //    indexGenerator.Build();
+            //});
         }
 
-        private void IndexGenerateProcessDisplay(int n, long max)
+        private void MenuItemAOPCall_Click(object sender, RoutedEventArgs e)
         {
-            Dispatcher.Invoke(()=>
-            {
-                Title = string.Format("{0}/{1}", n, max);
-            });
+            MainContent.Content = new DataTracerView();
         }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void MenuItemRedisSubscrib_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new RedisSubscribView();
+        }
+        private void MenuItemOptions_Click(object sender, RoutedEventArgs e)
         {
             SettingsView settingsView = new SettingsView();
             settingsView.ShowDialog();
         }
+        //private void IndexGenerateProcessDisplay(int n, long max)
+        //{
+        //    Dispatcher.Invoke(()=>
+        //    {
+        //        Title = string.Format("{0}/{1}", n, max);
+        //    });
+        //}
 
-        private void Search()
-        {
-            IndexSearcher indexSearcher = new IndexSearcher(cacheProvider);
-            List<RecordInfo> recordInfos = indexSearcher.Search(searchKeyWords.Text);
-            Records.Clear();
-            if (recordInfos == null || recordInfos.Count <= 0)
-            {
-                MessageBox.Show("no result.");
-                return;
-            }
-            foreach (var item in recordInfos)
-            {
-                Records.Add(item);
-            }
-        }
+        //private void Button_Click(object sender, RoutedEventArgs e)
+        //{
+        //    SettingsView settingsView = new SettingsView();
+        //    settingsView.ShowDialog();
+        //}
 
-        private void searchKeyWords_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.Key == Key.Enter)
-            {
-                Search();
-            }
-        }
+        //private void Search()
+        //{
+        //    IndexSearcher indexSearcher = new IndexSearcher(cacheProvider);
+        //    List<RecordInfo> recordInfos = indexSearcher.Search(searchKeyWords.Text);
+        //    Records.Clear();
+        //    if (recordInfos == null || recordInfos.Count <= 0)
+        //    {
+        //        MessageBox.Show("no result.");
+        //        return;
+        //    }
+        //    foreach (var item in recordInfos)
+        //    {
+        //        Records.Add(item);
+        //    }
+        //}
 
-        private void SearchResultGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            RecordInfo mySelectedElement = (RecordInfo)SearchResultGrid.SelectedItem;
-            int result = mySelectedElement.ID;
-            FuncCallDetailsView funcCallDetailsView = new FuncCallDetailsView();
-            funcCallDetailsView.ShowFuncCallDetails(result);
-        }
+        //private void searchKeyWords_KeyDown(object sender, KeyEventArgs e)
+        //{
+        //    if(e.Key == Key.Enter)
+        //    {
+        //        Search();
+        //    }
+        //}
+
+        //private void SearchResultGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        //{
+        //    RecordInfo mySelectedElement = (RecordInfo)SearchResultGrid.SelectedItem;
+        //    int result = mySelectedElement.ID;
+        //    FuncCallDetailsView funcCallDetailsView = new FuncCallDetailsView();
+        //    funcCallDetailsView.ShowFuncCallDetails(result);
+        //}
     }
 }

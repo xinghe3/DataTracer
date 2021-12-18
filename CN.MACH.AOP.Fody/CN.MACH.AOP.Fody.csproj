@@ -79,7 +79,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="CSRedisCore">
-      <Version>3.6.5</Version>
+      <Version>3.6.8</Version>
     </PackageReference>
     <PackageReference Include="Fody">
       <Version>6.5.4</Version>

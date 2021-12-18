@@ -10,16 +10,33 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="119*"/>
             <ColumnDefinition Width="146*"/>
-            <ColumnDefinition Width="527*"/>
+            <ColumnDefinition Width="141*"/>
+            <ColumnDefinition Width="148*"/>
+            <ColumnDefinition Width="238*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25*"/>
-            <RowDefinition Height="172*"/>
-            <RowDefinition Height="120*"/>
-            <RowDefinition Height="99*"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="97*"/>
+            <RowDefinition Height="122*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
         </Grid.RowDefinitions>
-        <Label Content="启动数据采集" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="82"/>
-        <CheckBox Content="启动" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+        <Label Content="启动数据采集" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="82"/>
+        <CheckBox Content="启动" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Margin="0,5"/>
 
+        <Label Grid.Row="1" Content="缓存IP" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="82"/>
+        <TextBox Grid.Row="1" Text="{Binding CacheSettings.Connection}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,5"/>
+
+        <Label Grid.Row="2" Content="缓存端口" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="82"/>
+        <TextBox Grid.Row="2" Text="{Binding CacheSettings.Port}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,5"/>
+
+        <Label Grid.Row="3" Content="缓存KEY" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="82"/>
+        <TextBox Grid.Row="3" Text="{Binding CacheSettings.PefixKey}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,5"/>
+
+
+        <Button Content="应用" Grid.Column="2" Grid.Row="6" Click="Apply_Click"  />
     </Grid>
 </Window>

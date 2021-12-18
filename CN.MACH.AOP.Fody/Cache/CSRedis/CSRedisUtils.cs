@@ -36,13 +36,14 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// redis 连接对象
         /// </summary>
         // private static RedisClient _redisClient;
-        private static CSRedisClient _redisClient;
+        private CSRedisClient _redisClient;
 
         /// <summary>
         /// 默认的 Key 值（用来当作 RedisKey 的前缀）
         /// </summary>
-        private static string DefaultKey;
+        private string DefaultKey;
 
+        private static int threadStatus = 0;
         /// <summary>
         /// 释放标志
         /// </summary>
@@ -59,8 +60,10 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <returns></returns>
         public CSRedisClient GetConnectionRedis(CacheSetting cacheSetting)
         {
-            if (_redisClient == null)
+            if (_redisClient == null || cacheSetting.IsChangeToNewServer)
             {
+                if (_redisClient != null) _redisClient.Dispose();
+
                 _redisClient = new CSRedisClient(cacheSetting.GetConnectionString());
             }
             return _redisClient;
@@ -74,15 +77,36 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// </summary>
         public CSRedisUtils(CacheSetting cacheSetting)
         {
+
             DefaultKey = cacheSetting.PefixKey;
             this.cacheSetting = cacheSetting;
             _redisClient = GetConnectionRedis(cacheSetting);
             AddRegisterEvent();
-            // RedisHelper.Initialization(_redisClient);
+            RedisHelper.Initialization(_redisClient);
             subScribes = new List<(string, Action<SubscribeMessageEventArgs>)>();
+
+            
+        }
+
+        internal int Init()
+        {
+            subScribes.Clear();
+            return ErrorCode.Success;
+        }
+
+        internal int Start()
+        {
+            if (threadStatus == 2) threadStatus = 3;
+            if (threadStatus == 0) threadStatus = 1;
+            while (threadStatus != 1)
+            {
+                Thread.Sleep(500);
+
+            }
+            threadStatus = 2;
             Task.Run(() =>
             {
-                while (true)
+                while (threadStatus == 2)
                 {
                     if (actionQueus.Count > 0 && actionQueus.TryDequeue(out var action))
                     {
@@ -90,7 +114,18 @@ namespace DC.ETL.Infrastructure.Cache.Redis
                     }
                     Thread.Sleep(1000);
                 }
+                threadStatus = 1;
             });
+            try
+            {
+                _redisClient.Subscribe(subScribes.ToArray());
+            }
+            catch (Exception ex)
+            {
+                // ReSubscribe();
+                Logs.WriteExLog(ex, "通信服务启动失败，错误信息：");
+            }
+            return ErrorCode.Success;
         }
 
         /// <summary>
@@ -1194,16 +1229,33 @@ namespace DC.ETL.Infrastructure.Cache.Redis
             subScribes.Add((channel, actionObj));
         }
 
-        ///// <summary>
-        ///// 订阅
-        ///// </summary>
-        ///// <param name="channel"></param>
-        ///// <param name="handle"></param>
-        //public void Subscribe(RedisChannel channel, Action<RedisChannel, RedisValue> handle)
-        //{
-        //    var sub = _connMultiplexer.GetSubscriber();
-        //    sub.Subscribe(channel, handle);
-        //}
+        /// <summary>
+        /// 订阅
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="handle"></param>
+        public int Subscribe(string channel, Action<string> action)
+        {
+            //int nRet = ErrorCode.Success;
+            //try
+            //{
+            //    var sub6 = _redisClient.Subscribe((channel, msg => action(msg.Body)));
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logs.WriteExLog(ex);
+            //    nRet = ErrorCode.UnKnowException;
+            //}
+            //return nRet;
+            var actionObj = new Action<SubscribeMessageEventArgs>(msg =>
+            {
+                // var t = Deserialize(msg.Body);
+                action(msg.Body);
+            });
+            subScribes.Add((channel, actionObj));
+            return ErrorCode.Success;
+        }
 
         ///// <summary>
         ///// 发布
@@ -1288,7 +1340,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        private static string AddKeyPrefix(string key)
+        private string AddKeyPrefix(string key)
         {
             // return "{DefaultKey}:{key}"; // 原始代码
             return string.Format("{0}:{1}", DefaultKey, key);
@@ -1298,7 +1350,7 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// <summary>
         /// 添加注册事件
         /// </summary>
-        private static void AddRegisterEvent()
+        private void AddRegisterEvent()
         {
             //_redisClient.TransactionQueued += RedisClient_TransactionQueued;
             //_redisClient.SubscriptionChanged += RedisClient_SubscriptionChanged;

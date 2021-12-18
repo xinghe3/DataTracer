@@ -17,6 +17,25 @@ namespace DC.ETL.Infrastructure.Cache
         void Subscribe<T>(string topic, Action<T> action) where T : class;
 
         /// <summary>
+        /// 消息订阅接口 直接返回json
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="topic"></param>
+        /// <param name="action"></param>
+        int Subscribe(string topic, Action<string> action);
+
+        /// <summary>
+        /// 启动 订阅服务器
+        /// </summary>
+        /// <returns></returns>
+        int Start();
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <returns></returns>
+        int Init();
+
+        /// <summary>
         /// 消息发布接口
         /// </summary>
         /// <typeparam name="T"></typeparam>

@@ -107,5 +107,20 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         {
             _ru.Publish<T>(topic, msg);
         }
+
+        public int Subscribe(string topic, Action<string> action)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Init()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

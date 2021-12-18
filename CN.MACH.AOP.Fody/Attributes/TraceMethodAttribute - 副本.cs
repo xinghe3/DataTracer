@@ -27,7 +27,7 @@ namespace FodyAopTool
 
         static TraceTargetAttribute()
         {
-            SrcCodeRecorder.Init();
+            //SrcCodeRecorder.Init();
         }
 
         public void Init(object instance, MethodBase method, object[] args)
@@ -62,24 +62,25 @@ namespace FodyAopTool
             {
                 foreach (object arg in args)
                 {
-                    var param = new SrcCodeObjectModel()
+                    record.Params.Add(new SrcCodeObjectModel()
                     {
                         Type = ToParamTypeString(arg),
                         Value = ToParamJsonString(arg)
-                    };
-                    record.Params.Add(param);
+                    });
                 }
             }
             if (InitMethod.Name.Contains("set_"))// 设置属性
             {
                 record.PropertyName = InitMethod.Name.Replace("set_", "");
                 Log(record);
+
             }
 
             else
             {
                 record.MethodName = InitMethod.Name;
                 Log(record);
+
             }
         }
         private static string ToParamTypeString(object arg)
@@ -97,83 +98,81 @@ namespace FodyAopTool
             return arg?.ToString() ?? "null";
         }
 
-        public void OnEntry()
-        {
-            if (!IsRecord)
-            {
-                return;
-            }
-            //Console.WriteLine("Before " + InitMethod.Name);
-        }
-        public void OnExit()
-        {
-            if (!IsRecord)
-            {
-                return;
-            }
-            //Console.WriteLine("After " + InitMethod.Name);
-        }
+        //public void OnEntry()
+        //{
+        //    if (!IsRecord)
+        //    {
+        //        return;
+        //    }
+        //    //Console.WriteLine("Before " + InitMethod.Name);
+        //}
+        //public void OnExit()
+        //{
+        //    if (!IsRecord)
+        //    {
+        //        return;
+        //    }
+        //    //Console.WriteLine("After " + InitMethod.Name);
+        //}
 
-        public void OnException(Exception exception)
-        {
-            if (!IsRecord)
-            {
-                return;
-            }
-            // Log("Ex " + InitMethod.Name + " " + exception.Message);
-        }
+        //public void OnException(Exception exception)
+        //{
+        //    if (!IsRecord)
+        //    {
+        //        return;
+        //    }
+        //    // Log("Ex " + InitMethod.Name + " " + exception.Message);
+        //}
 
         private void Log(SrcCodeRecordModel record)
         {
 
             record.ThreadID = Thread.CurrentThread.ManagedThreadId;
-            SrcCodeRecorder.Push(record);
+            //SrcCodeRecorder.Push(record);
             //cacheProvider.Add(MgConstants.SrcCodeThreadidKey, sID, Thread.CurrentThread.ManagedThreadId);
             // object obj = cacheProvider.Get("src:records", sID);
             // Logs.WriteLogFile("ThreadId:" + Thread.CurrentThread.ManagedThreadId + "\r\n" + txt, "FodyAopTool");
         }
-
-    }
-
-    /// <summary>
-    /// 分离连接缓存保存数据线程
-    /// </summary>
-    class SrcCodeRecorder
-    {
-        private static readonly ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
-        private static int ID = 0;
-
-        private static ConcurrentQueue<SrcCodeRecordModel> queue = new ConcurrentQueue<SrcCodeRecordModel>();
-
-        public static void Init()
+        /// <summary>
+        /// 分离连接缓存保存数据线程
+        /// </summary>
+        class SrcCodeRecorder
         {
-            IMQProvider mQProvider = cacheProvider as IMQProvider;
-            if (mQProvider != null)
+            private static readonly ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
+            private static int ID = 0;
+
+            private static ConcurrentQueue<SrcCodeRecordModel> queue = new ConcurrentQueue<SrcCodeRecordModel>();
+
+            public static void Init()
             {
-                mQProvider.Subscribe<IndexOptions>(MgConstants.Options, (opt) =>
+                IMQProvider mQProvider = cacheProvider as IMQProvider;
+                if (mQProvider != null)
                 {
-                    if (opt == null) return;
-                    TraceTargetAttribute.IsRecord = opt.IsRecord;
+                    mQProvider.Subscribe<IndexOptions>(MgConstants.Options, (opt) =>
+                    {
+                        if (opt == null) return;
+                        IsRecord = opt.IsRecord;
+                    });
+                }
+                Task.Run(() =>
+                {
+                    while(true)
+                    {
+                        if (queue.Count > 0 && queue.TryDequeue(out var record))
+                        {
+                            string sID = ID++.ToString();
+                            cacheProvider.Add(MgConstants.SrcCodeRecordKey, sID, record);
+                        }
+                        Thread.Sleep(1000);
+                    }
                 });
             }
-            Task.Run(() =>
+
+            public static void Push(SrcCodeRecordModel record)
             {
-                while (true)
-                {
-                    if (queue.Count > 0 && queue.TryDequeue(out var record))
-                    {
-                        string sID = ID++.ToString();
-                        cacheProvider.Add(MgConstants.SrcCodeRecordKey, sID, record);
-                    }
-                    Thread.Sleep(1000);
-                }
-            });
-        }
+                queue.Enqueue(record);
+            }
 
-        public static void Push(SrcCodeRecordModel record)
-        {
-            queue.Enqueue(record);
         }
-
     }
 }

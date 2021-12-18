@@ -55,6 +55,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\RedisMsgRecord.cs" />
+    <Compile Include="Models\RedisSubscribOptions.cs" />
     <Compile Include="Views\FuncCallDetailsView.xaml.cs">
       <DependentUpon>FuncCallDetailsView.xaml</DependentUpon>
     </Compile>
@@ -66,13 +68,19 @@
     </Compile>
     <Compile Include="Views\FuncCallView\FuncModel.cs" />
     <Compile Include="Views\FuncCallView\FuncParamDataTemplateSelector.cs" />
-    <Compile Include="Views\FuncCallView\JsonHeaderLogic.cs" />
-    <Compile Include="Views\FuncCallView\JsonValueConverter.cs" />
-    <Compile Include="Views\FuncCallView\JsonView.xaml.cs">
+    <Compile Include="Views\Common\JsonHeaderLogic.cs" />
+    <Compile Include="Views\Common\JsonValueConverter.cs" />
+    <Compile Include="Views\Common\JsonView.xaml.cs">
       <DependentUpon>JsonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Redis\RedisSubscribView.xaml.cs">
+      <DependentUpon>RedisSubscribView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tracer\DataTracerView.xaml.cs">
+      <DependentUpon>DataTracerView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -98,11 +106,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\FuncCallView\JsonView.xaml">
+    <Page Include="Views\Common\JsonView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Redis\RedisSubscribView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Tracer\DataTracerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -140,7 +156,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
+    <Content Include="redissubkeys.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">

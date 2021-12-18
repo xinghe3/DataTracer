@@ -109,5 +109,20 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         {
             _ru.Publish(topic, msg);
         }
+
+        public int Subscribe(string topic, Action<string> action)
+        {
+            return _ru.Subscribe(topic, action);
+        }
+
+        public int Start()
+        {
+            return _ru.Start();
+        }
+
+        public int Init()
+        {
+            return _ru.Init();
+        }
     }
 }
