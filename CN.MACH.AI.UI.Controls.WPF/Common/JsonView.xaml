@@ -3,9 +3,9 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:WpfBlendTest1.FuncCallView"
+    xmlns:local="clr-namespace:CN.MACH.AI.UI.Controls"
 	mc:Ignorable="d"
-	x:Class="WpfBlendTest1.FuncCallView.JsonView"
+	x:Class="CN.MACH.AI.UI.Controls.JsonView"
 	x:Name="ucJson"
 	d:DesignWidth="640" d:DesignHeight="480">
     <UserControl.Resources>

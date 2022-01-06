@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-namespace WpfBlendTest1.FuncCallView
+namespace CN.MACH.AI.UI.Controls
 {
     public class JsonHeaderLogic
     {

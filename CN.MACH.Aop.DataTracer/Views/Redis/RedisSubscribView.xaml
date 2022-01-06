@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:common="clr-namespace:WpfBlendTest1.FuncCallView"
+             xmlns:common="clr-namespace:CN.MACH.AI.UI.Controls;assembly=CN.MACH.AI.UI.Controls.WPF"
              xmlns:local="clr-namespace:CN.MACH.Aop.DataTracer.Views.Redis"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -16,23 +16,27 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="45" />
+                <ColumnDefinition Width="45" />
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="searchKeyWords" >
+            <TextBox x:Name="searchKeyWords" KeyUp="searchKeyWords_KeyUp" >
 
             </TextBox>
-            <Button Grid.Column="1">
+            <Button Grid.Column="1" Click="Button_Click">
                 <Path Data="M5,5 10,5 20,10 0,10" Fill="Aqua" />
             </Button>
+            <CheckBox Grid.Column="2" IsChecked="{Binding Paused}" Content="暂停" />
         </Grid>
-        <ListView Grid.Row="1" ItemsSource="{Binding Records}" ItemTemplate="{DynamicResource RedisListDataTemplate}" Grid.RowSpan="2">
+        <ListView x:Name="msglist" Grid.Row="1" ItemsSource="{Binding Records}" ItemTemplate="{DynamicResource RedisListDataTemplate}" Grid.RowSpan="2">
             <ListView.Resources>
                 <DataTemplate x:Key="RedisListDataTemplate">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding Time}" />
+                        <TextBlock Grid.Column="1" Margin="5" VerticalAlignment="Center" Text="{Binding Name}" />
                         <common:JsonView Grid.Column="2" JsonString="{Binding Value}" />
                     </Grid>
                 </DataTemplate>

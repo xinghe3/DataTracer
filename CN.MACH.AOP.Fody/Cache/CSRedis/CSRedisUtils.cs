@@ -37,6 +37,10 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         /// </summary>
         // private static RedisClient _redisClient;
         private CSRedisClient _redisClient;
+        /// <summary>
+        /// 订阅对象
+        /// </summary>
+        private SubscribeObject subscribeObject;
 
         /// <summary>
         /// 默认的 Key 值（用来当作 RedisKey 的前缀）
@@ -90,12 +94,6 @@ namespace DC.ETL.Infrastructure.Cache.Redis
 
         internal int Init()
         {
-            subScribes.Clear();
-            return ErrorCode.Success;
-        }
-
-        internal int Start()
-        {
             if (threadStatus == 2) threadStatus = 3;
             if (threadStatus == 0) threadStatus = 1;
             while (threadStatus != 1)
@@ -103,27 +101,37 @@ namespace DC.ETL.Infrastructure.Cache.Redis
                 Thread.Sleep(500);
 
             }
-            threadStatus = 2;
-            Task.Run(() =>
-            {
-                while (threadStatus == 2)
-                {
-                    if (actionQueus.Count > 0 && actionQueus.TryDequeue(out var action))
-                    {
-                        action.Invoke();
-                    }
-                    Thread.Sleep(1000);
-                }
-                threadStatus = 1;
-            });
+            subScribes.Clear();
+            subscribeObject?.Unsubscribe();
+            subscribeObject = null;
+            return ErrorCode.Success;
+        }
+
+        internal int Start()
+        {
+
+            //threadStatus = 2;
+            //Task.Run(() =>
+            //{
+            //    while (threadStatus == 2)
+            //    {
+            //        if (actionQueus.Count > 0 && actionQueus.TryDequeue(out var action))
+            //        {
+            //            action.Invoke();
+            //        }
+            //        Thread.Sleep(1000);
+            //    }
+            //    threadStatus = 1;
+            //});
             try
             {
-                _redisClient.Subscribe(subScribes.ToArray());
+                subscribeObject = _redisClient.Subscribe(subScribes.ToArray());
             }
             catch (Exception ex)
             {
                 // ReSubscribe();
                 Logs.WriteExLog(ex, "通信服务启动失败，错误信息：");
+                return ErrorCode.ConnFail;
             }
             return ErrorCode.Success;
         }
@@ -152,7 +160,11 @@ namespace DC.ETL.Infrastructure.Cache.Redis
             if (_IsDisposable)
             {
                 _IsDisposable = false;
-                if (_redisClient != null) _redisClient.Dispose();
+                if (_redisClient != null)
+                {
+                    subscribeObject?.Unsubscribe();
+                    _redisClient.Dispose();
+                }
                 if (value)
                 {
                     GC.SuppressFinalize(this);

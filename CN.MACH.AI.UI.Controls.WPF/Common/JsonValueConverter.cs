@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
-namespace WpfBlendTest1.FuncCallView
+namespace CN.MACH.AI.UI.Controls
 {
     public class JsonValueConverter : IValueConverter
     {

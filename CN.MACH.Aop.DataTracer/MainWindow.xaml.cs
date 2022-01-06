@@ -28,15 +28,6 @@ namespace CN.MACH.Aop.DataTracer
     /// </summary>
     public partial class MainWindow : Window
     {
-        //private readonly ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
-        //private ObservableCollection<RecordInfo> records = new ObservableCollection<RecordInfo>();
-
-        //public ObservableCollection<RecordInfo> Records
-        //{
-        //    get { return records; }
-        //    set { records = value; }
-        //}
-        // 但他本身就是语句 再查什么细节呢??? 先不管 看看需不需要展开表操作 还需要各个代码路径
 
 
 
@@ -44,12 +35,7 @@ namespace CN.MACH.Aop.DataTracer
         {
             InitializeComponent();
             DataContext = this;
-            //IndexGenerator indexGenerator = new IndexGenerator(cacheProvider);
-            //indexGenerator.ProcessNotice = IndexGenerateProcessDisplay;
-            //Task.Run(() =>
-            //{
-            //    indexGenerator.Build();
-            //});
+
         }
 
         private void MenuItemAOPCall_Click(object sender, RoutedEventArgs e)
@@ -65,50 +51,13 @@ namespace CN.MACH.Aop.DataTracer
             SettingsView settingsView = new SettingsView();
             settingsView.ShowDialog();
         }
-        //private void IndexGenerateProcessDisplay(int n, long max)
-        //{
-        //    Dispatcher.Invoke(()=>
-        //    {
-        //        Title = string.Format("{0}/{1}", n, max);
-        //    });
-        //}
 
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    SettingsView settingsView = new SettingsView();
-        //    settingsView.ShowDialog();
-        //}
-
-        //private void Search()
-        //{
-        //    IndexSearcher indexSearcher = new IndexSearcher(cacheProvider);
-        //    List<RecordInfo> recordInfos = indexSearcher.Search(searchKeyWords.Text);
-        //    Records.Clear();
-        //    if (recordInfos == null || recordInfos.Count <= 0)
-        //    {
-        //        MessageBox.Show("no result.");
-        //        return;
-        //    }
-        //    foreach (var item in recordInfos)
-        //    {
-        //        Records.Add(item);
-        //    }
-        //}
-
-        //private void searchKeyWords_KeyDown(object sender, KeyEventArgs e)
-        //{
-        //    if(e.Key == Key.Enter)
-        //    {
-        //        Search();
-        //    }
-        //}
-
-        //private void SearchResultGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        //{
-        //    RecordInfo mySelectedElement = (RecordInfo)SearchResultGrid.SelectedItem;
-        //    int result = mySelectedElement.ID;
-        //    FuncCallDetailsView funcCallDetailsView = new FuncCallDetailsView();
-        //    funcCallDetailsView.ShowFuncCallDetails(result);
-        //}
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
+            IMQProvider mQProvider = cacheProvider as IMQProvider;
+            mQProvider.Init();
+            cacheProvider.Dispose();
+        }
     }
 }

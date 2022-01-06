@@ -68,11 +68,6 @@
     </Compile>
     <Compile Include="Views\FuncCallView\FuncModel.cs" />
     <Compile Include="Views\FuncCallView\FuncParamDataTemplateSelector.cs" />
-    <Compile Include="Views\Common\JsonHeaderLogic.cs" />
-    <Compile Include="Views\Common\JsonValueConverter.cs" />
-    <Compile Include="Views\Common\JsonView.xaml.cs">
-      <DependentUpon>JsonView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Redis\RedisSubscribView.xaml.cs">
       <DependentUpon>RedisSubscribView.xaml</DependentUpon>
     </Compile>
@@ -103,10 +98,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\FuncCallView\FuncListView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Common\JsonView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -150,6 +141,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CN.MACH.AI.UI.Controls.WPF\CN.MACH.AI.UI.Controls.WPF.csproj">
+      <Project>{e9a35b76-b70e-4072-945e-6850982ab4df}</Project>
+      <Name>CN.MACH.AI.UI.Controls.WPF</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CN.MACH.AOP.Fody\CN.MACH.AOP.Fody.csproj">
       <Project>{fd573bff-4cf5-4ef4-8339-515209665b0c}</Project>
       <Name>CN.MACH.AOP.Fody</Name>

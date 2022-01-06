@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CN.MACH.AI.UI.Controls.WPF", "CN.MACH.AI.UI.Controls.WPF\CN.MACH.AI.UI.Controls.WPF.csproj", "{E9A35B76-B70E-4072-945E-6850982AB4DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{292FF6A0-C96D-4C60-AA4A-805F31CCC96E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{292FF6A0-C96D-4C60-AA4A-805F31CCC96E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{292FF6A0-C96D-4C60-AA4A-805F31CCC96E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9A35B76-B70E-4072-945E-6850982AB4DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9A35B76-B70E-4072-945E-6850982AB4DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9A35B76-B70E-4072-945E-6850982AB4DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9A35B76-B70E-4072-945E-6850982AB4DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -22,6 +22,7 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
 {
     /// <summary>
     /// RedisSubscribView.xaml 的交互逻辑
+    /// 待增加-增加一个再次发送消息的按钮方便测试
     /// </summary>
     public partial class RedisSubscribView : UserControl
     {
@@ -33,6 +34,24 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
             get { return records; }
             set { records = value; }
         }
+
+
+        /// <summary>
+        /// 控制暂停在界面更新消息 后台还是在接收消息
+        /// </summary>
+        public bool Paused
+        {
+            get { return (bool)GetValue(PausedProperty); }
+            set { SetValue(PausedProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Paused.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PausedProperty =
+            DependencyProperty.Register("Paused", typeof(bool), typeof(RedisSubscribView), new PropertyMetadata(false));
+
+
+
+        private List<RedisMsgRecord> allRecords = new List<RedisMsgRecord>();
         public RedisSubscribView()
         {
             InitializeComponent();
@@ -48,7 +67,7 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
             IMQProvider mQProvider = cacheProvider as IMQProvider;
             if (mQProvider != null && linekeys!=null &&  linekeys.Length > 0)
             {
-                mQProvider.Init();
+                int nRet = mQProvider.Init();
                 string pfxKey = "zbytest";
                 int n = 0;
                 foreach (var key in linekeys)
@@ -58,8 +77,11 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
                     if (nret != ErrorCode.Success)
                         break;
                 }
-                mQProvider.Start();
-                MessageBox.Show($"完成{n}个消息订阅");
+                nRet = mQProvider.Start();
+                if(nRet == ErrorCode.Success)
+                    MessageBox.Show($"完成{n}个消息订阅");
+                else
+                    MessageBox.Show($"连接失败");
             }
 
         }
@@ -72,13 +94,41 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
                 if (string.IsNullOrEmpty(opt)) return;
                 RedisMsgRecord redisMsgRecord = new RedisMsgRecord()
                 {
+                    Time = DateTime.Now.ToString("MM-dd HH:mm:ss"),
                     Name = key,
                     Value = opt
                 };
+
                 Dispatcher.Invoke(() =>
                 {
+                    if (Paused) // 如果暂停就不更新界面
+                        return;
+                    allRecords.Add(redisMsgRecord);
                     Records.Add(redisMsgRecord);
+                    msglist.ScrollIntoView(msglist.Items[msglist.Items.Count - 1]);
                 });
+            });
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Records.Clear();
+            });
+        }
+
+        private void searchKeyWords_KeyUp(object sender, KeyEventArgs e)
+        {
+            string searchWords = searchKeyWords.Text;
+            Dispatcher.Invoke(() =>
+            {
+                var list = allRecords.Where(r => r.Name.Contains(searchWords)).ToList();
+                Records.Clear();
+                foreach (var item in list)
+                {
+                    Records.Add(item);
+                }
             });
         }
     }

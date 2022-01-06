@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace WpfBlendTest1.FuncCallView
+namespace CN.MACH.AI.UI.Controls
 {
     /// <summary>
     /// JsonView.xaml 的交互逻辑
