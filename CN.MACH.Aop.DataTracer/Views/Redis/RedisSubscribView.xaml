@@ -17,6 +17,8 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="45" />
                 <ColumnDefinition Width="45" />
+                <ColumnDefinition Width="45" />
+                <ColumnDefinition Width="45" />
             </Grid.ColumnDefinitions>
             <TextBox x:Name="searchKeyWords" KeyUp="searchKeyWords_KeyUp" >
 
@@ -24,7 +26,9 @@
             <Button Grid.Column="1" Click="Button_Click">
                 <Path Data="M5,5 10,5 20,10 0,10" Fill="Aqua" />
             </Button>
-            <CheckBox Grid.Column="2" IsChecked="{Binding Paused}" Content="暂停" />
+            <Button Grid.Column="2" Click="LoadMsgs_Click" Content="Load Saved Messages"></Button>
+            <Button Grid.Column="3" Click="ClearSavedMsgs_Click" Content="Clear Saved Messages"></Button>
+            <CheckBox Grid.Column="4" IsChecked="{Binding Paused}" Content="暂停" Margin="5" VerticalAlignment="Center" />
         </Grid>
         <ListView x:Name="msglist" Grid.Row="1" ItemsSource="{Binding Records}" ItemTemplate="{DynamicResource RedisListDataTemplate}" Grid.RowSpan="2">
             <ListView.Resources>
@@ -34,10 +38,14 @@
                             <ColumnDefinition />
                             <ColumnDefinition />
                             <ColumnDefinition />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding Time}" />
-                        <TextBlock Grid.Column="1" Margin="5" VerticalAlignment="Center" Text="{Binding Name}" />
-                        <common:JsonView Grid.Column="2" JsonString="{Binding Value}" />
+                        <Button Grid.Column="1" x:Name="SendMsg" Click="SendMsg_Click"  Margin="5" VerticalAlignment="Center" Content="Send" />
+                        <Button Grid.Column="2" x:Name="SaveMsg" Click="SaveMsg_Click" Margin="5" VerticalAlignment="Center" Content="Save" />
+                        <TextBlock Grid.Column="3"  Margin="5" VerticalAlignment="Center" Text="{Binding Name}" />
+                        <common:JsonView Grid.Column="4" JsonString="{Binding Value}" />
                     </Grid>
                 </DataTemplate>
             </ListView.Resources>

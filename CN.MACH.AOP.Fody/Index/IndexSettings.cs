@@ -1,4 +1,5 @@
-﻿using CN.MACH.AI.UnitTest.Core.Utils;
+﻿using CN.MACH.AI.Cache;
+using CN.MACH.AI.UnitTest.Core.Utils;
 using DC.ETL.Infrastructure.Cache;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace CN.MACH.AOP.Fody.Index
     {
         private readonly ICacheProvider cacheProvider;
         public IndexOptions indexOptions { get; set; } = new IndexOptions();
+
+        public CacheSetting CacheSetting { get; set; }
 
         public IndexSettings(ICacheProvider cacheProvider)
         {

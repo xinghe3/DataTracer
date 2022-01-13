@@ -42,5 +42,12 @@ namespace DC.ETL.Infrastructure.Cache
         /// <param name="topic"></param>
         /// <param name="msg"></param>
         void Publish<T>(string topic, T msg) where T : class;
+
+        /// <summary>
+        /// 消息发布
+        /// </summary>
+        /// <param name="topic"></param>
+        /// <param name="msg"></param>
+        void Publish(string topic, string msg);
     }
 }

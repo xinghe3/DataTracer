@@ -65,6 +65,7 @@
     <Compile Include="Utils\DateUtils.cs" />
     <Compile Include="Utils\DictionaryUtils.cs" />
     <Compile Include="Utils\ErrorCode.cs" />
+    <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="Utils\JsonUtils.cs" />
     <Compile Include="Utils\Logs.cs" />
     <Compile Include="Utils\PathUtils.cs" />

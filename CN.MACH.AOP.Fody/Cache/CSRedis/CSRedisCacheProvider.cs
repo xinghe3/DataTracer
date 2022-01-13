@@ -107,12 +107,17 @@ namespace DC.ETL.Infrastructure.Cache.Redis
 
         public void Publish<T>(string topic, T msg) where T : class
         {
-            _ru.Publish(topic, msg);
+            _ru.Publish<T>(topic, msg);
         }
 
         public int Subscribe(string topic, Action<string> action)
         {
             return _ru.Subscribe(topic, action);
+        }
+
+        public void Publish(string topic, string msg)
+        {
+            _ru.Publish(topic, msg);
         }
 
         public int Start()
@@ -124,5 +129,6 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         {
             return _ru.Init();
         }
+
     }
 }

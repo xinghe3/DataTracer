@@ -1280,7 +1280,18 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         //    var sub = _connMultiplexer.GetSubscriber();
         //    return sub.Publish(channel, message);
         //}
-
+        public long Publish(string channel, string message)
+        {
+            try
+            {
+                return _redisClient.Publish(channel, message);
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteExLog(ex);
+            }
+            return -1;
+        }
         /// <summary>
         /// 发布（使用序列化）
         /// </summary>

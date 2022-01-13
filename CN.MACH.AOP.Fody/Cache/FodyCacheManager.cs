@@ -1,4 +1,5 @@
 ﻿using CN.MACH.AI.Cache;
+using CN.MACH.AOP.Fody.Index;
 using DC.ETL.Infrastructure.Cache;
 using DC.ETL.Infrastructure.Cache.Redis;
 using System;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 public class FodyCacheManager
 {
     private static ICacheProvider cacheProvider = null;
+    private static IndexSettings indexSettings = null;
 
     public static ICacheProvider GetInterface(CacheSetting cacheSetting = null)
     {
@@ -29,6 +31,16 @@ public class FodyCacheManager
             cacheProvider = new CSRedisCacheProvider(cacheSetting);
         }
         return cacheProvider;
+    }
+
+
+    public static void Setting(IndexSettings settings)
+    {
+        indexSettings = settings;
+    }
+    public static IndexSettings GetSetting()
+    {
+        return indexSettings;
     }
 }
 

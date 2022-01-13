@@ -53,8 +53,11 @@ namespace CN.MACH.Aop.DataTracer.Views
                 Port = 6379,
                 PefixKey = "zbytest:"
             };
+
             cacheProvider = FodyCacheManager.GetInterface(CacheSettings);
             indexSettings = new IndexSettings(cacheProvider);
+            indexSettings.CacheSetting = CacheSettings;
+            FodyCacheManager.Setting(indexSettings);
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)

@@ -86,5 +86,11 @@
       <Version>13.0.1</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CN.MACH.AOP.Fody\CN.MACH.AOP.Fody.csproj">
+      <Project>{FD573BFF-4CF5-4EF4-8339-515209665B0C}</Project>
+      <Name>CN.MACH.AOP.Fody</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

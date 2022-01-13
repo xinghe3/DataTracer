@@ -122,5 +122,10 @@ namespace DC.ETL.Infrastructure.Cache.Redis
         {
             throw new NotImplementedException();
         }
+
+        public void Publish(string topic, string msg)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

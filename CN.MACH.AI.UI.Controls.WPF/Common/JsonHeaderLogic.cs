@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using CN.MACH.AI.UnitTest.Core.Utils;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +26,16 @@ namespace CN.MACH.AI.UI.Controls
         public static IEnumerable<JsonHeaderLogic> FromJToken(string json)
         {
             //创建JObject
-            JToken jobj = JToken.Parse(json as string);
-            return jobj.Children().Select(c => FromJToken(c));
+            try
+            {
+                JToken jobj = JToken.Parse(json as string);
+                return jobj.Children().Select(c => FromJToken(c));
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteExLog(ex);
+            }
+            return new List<JsonHeaderLogic>();
         }
         //外部的从JToken创建JsonHeaderLogic的方法
         public static JsonHeaderLogic FromJToken(JToken jtoken)

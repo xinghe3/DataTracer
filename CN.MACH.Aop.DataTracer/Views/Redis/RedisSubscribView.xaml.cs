@@ -1,5 +1,7 @@
 ﻿using CN.MACH.AI.UnitTest.Core.Utils;
 using CN.MACH.Aop.DataTracer.Models;
+using CN.MACH.AOP.Fody.Index;
+using CN.MACH.AOP.Fody.Utils;
 using DC.ETL.Infrastructure.Cache;
 using System;
 using System.Collections.Generic;
@@ -23,6 +25,9 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
     /// <summary>
     /// RedisSubscribView.xaml 的交互逻辑
     /// 待增加-增加一个再次发送消息的按钮方便测试
+    /// 增加一个保存按钮 保存消息，便于再次发送 可以加注释 名称
+    /// 增加一个加载保存消息 按钮 使用保存问题 发送消息
+    /// 还需要一个删除消息的操作按钮
     /// </summary>
     public partial class RedisSubscribView : UserControl
     {
@@ -52,15 +57,15 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
 
 
         private List<RedisMsgRecord> allRecords = new List<RedisMsgRecord>();
+        private RedisQueryWords query = new RedisQueryWords();
+        private SavedMsgs msgs = new SavedMsgs();
+
         public RedisSubscribView()
         {
             InitializeComponent();
             DataContext = this;
             cacheProvider = FodyCacheManager.GetInterface();
-            RedisSubscribOptions options = new RedisSubscribOptions()
-            {
-                 SubscribKeys = ""
-            };
+            IndexSettings indexSettings = FodyCacheManager.GetSetting();
             string subscribKeys = File.ReadAllText("redissubkeys.txt");
 
             string[] linekeys = StringUtils.SplitByLine(subscribKeys, StringUtils.Trim);
@@ -68,7 +73,7 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
             if (mQProvider != null && linekeys!=null &&  linekeys.Length > 0)
             {
                 int nRet = mQProvider.Init();
-                string pfxKey = "zbytest";
+                string pfxKey = indexSettings.CacheSetting.PefixKey;
                 int n = 0;
                 foreach (var key in linekeys)
                 {
@@ -98,7 +103,8 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
                     Name = key,
                     Value = opt
                 };
-
+                if (!query.Filter(redisMsgRecord))
+                    return;
                 Dispatcher.Invoke(() =>
                 {
                     if (Paused) // 如果暂停就不更新界面
@@ -121,15 +127,137 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
         private void searchKeyWords_KeyUp(object sender, KeyEventArgs e)
         {
             string searchWords = searchKeyWords.Text;
+            query = RedisQueryWordsBuilder.Build(searchWords);
+            Search(searchWords);
+        }
+
+        private void Search(string searchWords)
+        {
             Dispatcher.Invoke(() =>
             {
-                var list = allRecords.Where(r => r.Name.Contains(searchWords)).ToList();
+                IEnumerable<RedisMsgRecord> list = query != null ? allRecords.Where(r => query.Filter(r)) : allRecords;
                 Records.Clear();
                 foreach (var item in list)
                 {
                     Records.Add(item);
                 }
             });
+        }
+
+        class RedisQueryWords
+        {
+            public RedisQueryWords()
+            {
+                Includes = new List<string>();
+                Excludes = new List<string>();
+
+            }
+            public ICollection<string> Includes { get; set; }
+            public ICollection<string> Excludes { get; set; }
+
+            public bool Filter(RedisMsgRecord record)
+            {
+                bool b = true;
+                if (record == null || string.IsNullOrEmpty(record.Name)) return false;
+                if (Includes != null && Includes.Count > 0)
+                {
+                    foreach (string include in Includes)
+                    {
+                        if (record.Name.Contains(include))
+                            return true;
+                    }
+                }
+                if (Excludes != null && Excludes.Count > 0)
+                {
+                    foreach (string exclude in Excludes)
+                    {
+                        if (record.Name.Contains(exclude))
+                            return false;
+                    }
+                }
+                return b;
+            }
+        }
+        class RedisQueryWordsBuilder
+        {
+            public static RedisQueryWords Build(string words)
+            {
+                RedisQueryWords query = new RedisQueryWords();
+                if (string.IsNullOrEmpty(words))
+                    return query;
+                string[] wordsArr = words.Split(' ');
+                foreach (string word in wordsArr)
+                {
+                    if(word.StartsWith("in:"))
+                    {
+                        query.Includes.Add(word.Replace("in:", ""));
+                    }
+                    else
+                    {
+                        query.Excludes.Add(word);
+
+                    }
+                }
+                return query;
+            }
+        }
+
+        class SavedMsgs
+        {
+            private List<RedisMsgRecord> savedMsgs = new List<RedisMsgRecord>();
+            private string savedFilePath = "savedmsgs.json";
+            public List<RedisMsgRecord> Load()
+            {
+                string recordStrs = FileUtils.Read(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, savedFilePath), Encoding.UTF8);
+                savedMsgs = JsonUtils.Deserialize<List<RedisMsgRecord>>(recordStrs);
+                if (savedMsgs == null) savedMsgs = new List<RedisMsgRecord>();
+                return savedMsgs;
+            }
+            public void Add(RedisMsgRecord record)
+            {
+                if (savedMsgs == null || savedMsgs.Count <= 0)
+                    Load();
+                savedMsgs.Add(record);
+                string recordStrs = JsonUtils.Serialize(savedMsgs);
+                FileUtils.Save(recordStrs,System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, savedFilePath), Encoding.UTF8);
+            }
+            public void Clear()
+            {
+                if (savedMsgs != null) savedMsgs.Clear();
+                FileUtils.DeleteFile(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, savedFilePath));
+            }
+        }
+
+        private void LoadMsgs_Click(object sender, RoutedEventArgs e)
+        {
+            allRecords = msgs.Load();
+            Search(string.Empty);
+        }
+        private void ClearSavedMsgs_Click(object sender, RoutedEventArgs e)
+        {
+            msgs.Clear();
+        }
+        private void SaveMsg_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            RedisMsgRecord record = btn.DataContext as RedisMsgRecord;
+            if (record == null)
+                return;
+            msgs.Add(record);
+        }
+
+        private void SendMsg_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            RedisMsgRecord record = btn.DataContext as RedisMsgRecord;
+            if (record == null)
+                return;
+            IMQProvider mQProvider = cacheProvider as IMQProvider;
+            if (mQProvider != null)
+            {
+                // add a string pub func
+                mQProvider.Publish(record.Name, record.Value);
+            }
         }
     }
 }
