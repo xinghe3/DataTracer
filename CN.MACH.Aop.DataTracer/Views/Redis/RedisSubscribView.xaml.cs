@@ -77,8 +77,12 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
                 int n = 0;
                 foreach (var key in linekeys)
                 {
+                    string[] keyDataArr = StringUtils.Split(key, "\t");
+                    if (keyDataArr == null || keyDataArr.Length <= 0) continue;
                     n++;
-                    int nret = AppendSubscribe(mQProvider, pfxKey + key);
+                    string keyName = keyDataArr[0];
+                    string keyDesc = keyDataArr.Length > 1 ? keyDataArr[1] : string.Empty;
+                    int nret = AppendSubscribe(mQProvider, pfxKey + keyName, keyDesc);
                     if (nret != ErrorCode.Success)
                         break;
                 }
@@ -91,7 +95,7 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
 
         }
 
-        private int AppendSubscribe(IMQProvider mQProvider, string key)
+        private int AppendSubscribe(IMQProvider mQProvider, string key, string desc)
         {
             if (string.IsNullOrEmpty(key)) return ErrorCode.EmptyParams;
             return mQProvider.Subscribe(key, (opt) =>
@@ -101,7 +105,8 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
                 {
                     Time = DateTime.Now.ToString("MM-dd HH:mm:ss"),
                     Name = key,
-                    Value = opt
+                    Value = opt,
+                    Desc = desc,
                 };
                 if (!query.Filter(redisMsgRecord))
                     return;
