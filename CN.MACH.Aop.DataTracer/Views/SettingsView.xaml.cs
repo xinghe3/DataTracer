@@ -47,16 +47,10 @@ namespace CN.MACH.Aop.DataTracer.Views
         {
             InitializeComponent();
             DataContext = this;
-            CacheSettings  = new CacheSetting()
-            {
-                Connection = "127.0.0.1",
-                Port = 6379,
-                PefixKey = "zbytest:"
-            };
-
             cacheProvider = FodyCacheManager.GetInterface(CacheSettings);
             indexSettings = new IndexSettings(cacheProvider);
-            indexSettings.CacheSetting = CacheSettings;
+            indexSettings.Load();
+            CacheSettings = indexSettings.CacheSetting;
             FodyCacheManager.Setting(indexSettings);
         }
 
@@ -65,7 +59,7 @@ namespace CN.MACH.Aop.DataTracer.Views
             indexSettings.indexOptions.IsRecord = true;
             indexSettings.Update();
         }
-
+        ao凹槽
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             indexSettings.indexOptions.IsRecord = false;
@@ -76,6 +70,7 @@ namespace CN.MACH.Aop.DataTracer.Views
         {
             CacheSettings.IsChangeToNewServer = true;
             cacheProvider = FodyCacheManager.GetInterface(CacheSettings);
+            int nRet = indexSettings.Save();
             MessageBox.Show("应用更改");
         }
     }

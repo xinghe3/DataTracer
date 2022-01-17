@@ -1,8 +1,10 @@
 ﻿using CN.MACH.AI.Cache;
 using CN.MACH.AI.UnitTest.Core.Utils;
+using CN.MACH.AOP.Fody.Utils;
 using DC.ETL.Infrastructure.Cache;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,6 +45,28 @@ namespace CN.MACH.AOP.Fody.Index
             {
                 mQProvider.Publish<IndexOptions>(MgConstants.Options, indexOptions);
             }
+            return ErrorCode.Success;
+        }
+
+        private string jsonPath = "Settings.json";
+        public int Load()
+        {
+            if(CacheSetting == null) CacheSetting = new CacheSetting();
+            if (!File.Exists(jsonPath))
+                return ErrorCode.FileNotFound;
+            string json = File.ReadAllText(jsonPath);
+            IndexSettings settings = JsonUtils.Deserialize<IndexSettings>(json);
+            if (settings == null || settings.CacheSetting == null) return ErrorCode.NULLPOINTER;
+            CacheSetting = settings.CacheSetting;
+            return ErrorCode.Success;
+        }
+
+        public int Save()
+        {
+            if (File.Exists(jsonPath))
+                File.Delete(jsonPath);
+            string json = JsonUtils.Serialize(this);
+            File.WriteAllText(jsonPath, json);
             return ErrorCode.Success;
         }
     }

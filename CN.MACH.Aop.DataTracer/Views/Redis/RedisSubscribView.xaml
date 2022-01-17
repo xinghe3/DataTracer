@@ -39,13 +39,15 @@
                             <ColumnDefinition />
                             <ColumnDefinition />
                             <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="200" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding Time}" />
                         <Button Grid.Column="1" x:Name="SendMsg" Click="SendMsg_Click"  Margin="5" VerticalAlignment="Center" Content="Send" />
                         <Button Grid.Column="2" x:Name="SaveMsg" Click="SaveMsg_Click" Margin="5" VerticalAlignment="Center" Content="Save" />
                         <TextBlock Grid.Column="3"  Margin="5" VerticalAlignment="Center" Text="{Binding Name}" />
-                        <common:JsonView Grid.Column="4" JsonString="{Binding Value}" />
+                        <TextBlock Grid.Column="4"  Margin="5" VerticalAlignment="Center" Text="{Binding Desc}" />
+                        <common:JsonView Grid.Column="5" JsonString="{Binding Value}" />
                     </Grid>
                 </DataTemplate>
             </ListView.Resources>
