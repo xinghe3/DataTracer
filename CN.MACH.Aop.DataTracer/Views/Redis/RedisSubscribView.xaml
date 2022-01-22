@@ -15,20 +15,22 @@
         <Grid >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="45" />
-                <ColumnDefinition Width="45" />
-                <ColumnDefinition Width="45" />
-                <ColumnDefinition Width="45" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="35" />
             </Grid.ColumnDefinitions>
             <TextBox x:Name="searchKeyWords" KeyUp="searchKeyWords_KeyUp" >
 
             </TextBox>
             <Button Grid.Column="1" Click="Button_Click">
-                <Path Data="M5,5 10,5 20,10 0,10" Fill="Aqua" />
+
+                <TextBlock Text="&#xf0e2;" Style="{DynamicResource FontAwesome}" />
+                <!--<Path Data="M5,5 10,5 20,10 0,10" Fill="Aqua" />-->
             </Button>
-            <Button Grid.Column="2" Click="LoadMsgs_Click" Content="Load Saved Messages"></Button>
-            <Button Grid.Column="3" Click="ClearSavedMsgs_Click" Content="Clear Saved Messages"></Button>
-            <CheckBox Grid.Column="4" IsChecked="{Binding Paused}" Content="暂停" Margin="5" VerticalAlignment="Center" />
+            <Button Grid.Column="2" Click="LoadMsgs_Click" Content="&#xf0ea;" Style="{DynamicResource ButtonFontAwesome}"></Button>
+            <Button Grid.Column="3" Click="ClearSavedMsgs_Click" Content="&#xf0c7;" Style="{DynamicResource ButtonFontAwesome}"></Button>
+            <CheckBox Grid.Column="4" IsChecked="{Binding Paused}" Style="{DynamicResource CheckBoxPlayStop}" Margin="5" VerticalAlignment="Center" />
         </Grid>
         <ListView x:Name="msglist" Grid.Row="1" ItemsSource="{Binding Records}" ItemTemplate="{DynamicResource RedisListDataTemplate}" Grid.RowSpan="2">
             <ListView.Resources>
@@ -45,7 +47,7 @@
                         <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding Time}" />
                         <Button Grid.Column="1" x:Name="SendMsg" Click="SendMsg_Click"  Margin="5" VerticalAlignment="Center" Content="Send" />
                         <Button Grid.Column="2" x:Name="SaveMsg" Click="SaveMsg_Click" Margin="5" VerticalAlignment="Center" Content="Save" />
-                        <TextBlock Grid.Column="3"  Margin="5" VerticalAlignment="Center" Text="{Binding Name}" />
+                        <TextBlock Grid.Column="3"  Margin="5" VerticalAlignment="Center" Text="{Binding Name}" MouseRightButtonUp="MsgName_MouseRightButtonUp" />
                         <TextBlock Grid.Column="4"  Margin="5" VerticalAlignment="Center" Text="{Binding Desc}" />
                         <common:JsonView Grid.Column="5" JsonString="{Binding Value}" />
                     </Grid>

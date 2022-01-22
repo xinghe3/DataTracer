@@ -59,7 +59,7 @@ namespace CN.MACH.Aop.DataTracer.Views
             indexSettings.indexOptions.IsRecord = true;
             indexSettings.Update();
         }
-        ao凹槽
+
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             indexSettings.indexOptions.IsRecord = false;

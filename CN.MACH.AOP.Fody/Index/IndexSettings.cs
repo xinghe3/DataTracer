@@ -28,6 +28,7 @@ namespace CN.MACH.AOP.Fody.Index
 
         public IndexSettings(ICacheProvider cacheProvider)
         {
+            if (cacheProvider == null) return;
             this.cacheProvider = cacheProvider;
             cacheProvider.Add<bool>(MgConstants.SrcCodeConfigsKey, MgConstants.IsRecord, false);
             indexOptions.IsRecord = cacheProvider.Get<bool>(MgConstants.SrcCodeConfigsKey, MgConstants.IsRecord);

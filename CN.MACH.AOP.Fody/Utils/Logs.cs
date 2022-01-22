@@ -40,10 +40,14 @@ namespace CN.MACH.AI.UnitTest.Core.Utils
     /// </summary>
     public class Logs
     {
-        private static string LogFileDir = "D:\\";
+        private static string LogFileDir = "C:\\";
 
-        private const string errorLogPath = "\\error0.txt";///< error information.
-        private const string exceptionLogPath = "\\explog.txt";///< exception information.
+        private const string logPath = "\\log.txt";
+        private const string errorLogPath = "\\error0.txt";
+        /// <summary>
+        /// exception information.
+        /// </summary>
+        private const string exceptionLogPath = "\\explog.txt";
         
         private static int ErrorLevel = LogErrorLevel.information;
 
@@ -63,7 +67,11 @@ namespace CN.MACH.AI.UnitTest.Core.Utils
             }
             return fileDir;
         }
-
+        public static void Log(params object[] inputs)
+        {
+            //string str = ex.Message + Environment.NewLine + ex.StackTrace;
+            WriteLogFile(StringUtils.ToString(inputs), logPath);
+        }
         //写异常日志
         public static void WriteExLog(Exception ex)
         {

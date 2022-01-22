@@ -1,6 +1,8 @@
 ﻿using CN.MACH.AOP.Fody;
+using CN.MACH.AOP.Fody.Filters;
 using CN.MACH.AOP.Fody.Index;
 using CN.MACH.AOP.Fody.Models;
+using CN.MACH.AOP.Fody.Recorders;
 using CN.MACH.AOP.Fody.Utils;
 using DC.ETL.Infrastructure.Cache;
 using FodyAopTool;
@@ -14,6 +16,12 @@ using System.Threading.Tasks;
 [module: TraceTarget]  //相当于注册类
 namespace FodyAopTool
 {
+    /// <summary>
+    /// 程序调用
+    /// 1.引用 NUGET包 MethodDecorator.Fody
+    /// 2.AssemblyInfo.cs 中 加入 [assembly:FodyAopTool.TraceTarget]
+    /// 3.需要拦截的类名 方法名 上添加注解 [FodyAopTool.TraceTarget]
+    /// </summary>
     [AttributeUsage(AttributeTargets.All)] //可以分为对属性，方法，域等注解，all就是全部都注解
     public class TraceTargetAttribute : Attribute
     {
@@ -25,9 +33,15 @@ namespace FodyAopTool
 
         protected Object[] Args;
 
+        private static ISrcCodeRecorder recorder = null;
+        private static ICodeFilter codeFilter = null;
+
         static TraceTargetAttribute()
         {
-            SrcCodeRecorder.Init();
+            recorder = RecorderFactory.CreateInterface();
+            codeFilter = CodeFilterFactory.CreateInterface();
+            recorder.Init();
+            codeFilter.Init();
         }
 
         public void Init(object instance, MethodBase method, object[] args)
@@ -125,55 +139,10 @@ namespace FodyAopTool
 
         private void Log(SrcCodeRecordModel record)
         {
-
             record.ThreadID = Thread.CurrentThread.ManagedThreadId;
-            SrcCodeRecorder.Push(record);
-            //cacheProvider.Add(MgConstants.SrcCodeThreadidKey, sID, Thread.CurrentThread.ManagedThreadId);
-            // object obj = cacheProvider.Get("src:records", sID);
-            // Logs.WriteLogFile("ThreadId:" + Thread.CurrentThread.ManagedThreadId + "\r\n" + txt, "FodyAopTool");
+            recorder.Push(record);
         }
 
     }
 
-    /// <summary>
-    /// 分离连接缓存保存数据线程
-    /// </summary>
-    class SrcCodeRecorder
-    {
-        private static readonly ICacheProvider cacheProvider = FodyCacheManager.GetInterface();
-        private static int ID = 0;
-
-        private static ConcurrentQueue<SrcCodeRecordModel> queue = new ConcurrentQueue<SrcCodeRecordModel>();
-
-        public static void Init()
-        {
-            IMQProvider mQProvider = cacheProvider as IMQProvider;
-            if (mQProvider != null)
-            {
-                mQProvider.Subscribe<IndexOptions>(MgConstants.Options, (opt) =>
-                {
-                    if (opt == null) return;
-                    TraceTargetAttribute.IsRecord = opt.IsRecord;
-                });
-            }
-            Task.Run(() =>
-            {
-                while (true)
-                {
-                    if (queue.Count > 0 && queue.TryDequeue(out var record))
-                    {
-                        string sID = ID++.ToString();
-                        cacheProvider.Add(MgConstants.SrcCodeRecordKey, sID, record);
-                    }
-                    Thread.Sleep(1000);
-                }
-            });
-        }
-
-        public static void Push(SrcCodeRecordModel record)
-        {
-            queue.Enqueue(record);
-        }
-
-    }
 }

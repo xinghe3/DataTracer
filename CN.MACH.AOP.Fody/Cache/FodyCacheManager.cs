@@ -40,6 +40,11 @@ public class FodyCacheManager
     }
     public static IndexSettings GetSetting()
     {
+        if (indexSettings == null)
+        {
+            indexSettings = new IndexSettings(cacheProvider);
+            indexSettings.Load();
+        }
         return indexSettings;
     }
 }

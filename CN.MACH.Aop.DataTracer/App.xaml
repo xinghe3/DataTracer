@@ -4,6 +4,10 @@
              xmlns:local="clr-namespace:CN.MACH.Aop.DataTracer"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/CN.MACH.Aop.DataTracer;Component/Styles/Style.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

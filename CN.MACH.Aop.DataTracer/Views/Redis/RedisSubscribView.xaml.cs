@@ -64,8 +64,8 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
         {
             InitializeComponent();
             DataContext = this;
-            cacheProvider = FodyCacheManager.GetInterface();
             IndexSettings indexSettings = FodyCacheManager.GetSetting();
+            cacheProvider = FodyCacheManager.GetInterface(indexSettings?.CacheSetting);
             string subscribKeys = File.ReadAllText("redissubkeys.txt");
 
             string[] linekeys = StringUtils.SplitByLine(subscribKeys, StringUtils.Trim);
@@ -170,6 +170,7 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
                     {
                         if (record.Name.Contains(include))
                             return true;
+                        return false;
                     }
                 }
                 if (Excludes != null && Excludes.Count > 0)
@@ -263,6 +264,12 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
                 // add a string pub func
                 mQProvider.Publish(record.Name, record.Value);
             }
+        }
+
+        private void MsgName_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            TextBlock t = sender as TextBlock;
+            Clipboard.SetText(t.Text);
         }
     }
 }
