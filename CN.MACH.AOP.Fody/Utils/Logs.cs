@@ -40,7 +40,7 @@ namespace CN.MACH.AI.UnitTest.Core.Utils
     /// </summary>
     public class Logs
     {
-        private static string LogFileDir = "C:\\";
+        private static string LogFileDir = "D:\\";
 
         private const string logPath = "\\log.txt";
         private const string errorLogPath = "\\error0.txt";

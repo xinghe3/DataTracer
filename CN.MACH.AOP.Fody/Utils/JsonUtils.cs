@@ -2,10 +2,13 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 
 namespace CN.MACH.AOP.Fody.Utils
 {
@@ -220,5 +223,218 @@ namespace CN.MACH.AOP.Fody.Utils
                 return default(T);
             }
         }
+
+        /// <summary>
+        /// Json 字符串 转换为 DataTable数据集合
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static DataTable ToDataTable(string json)
+        {
+            DataTable dataTable = new DataTable();  //实例化
+            DataTable result;
+            try
+            {
+                JavaScriptSerializer javaScriptSerializer = new JavaScriptSerializer();
+                javaScriptSerializer.MaxJsonLength = Int32.MaxValue; //取得最大数值
+                ArrayList arrayList = javaScriptSerializer.Deserialize<ArrayList>(json);
+                if (arrayList.Count > 0)
+                {
+                    foreach (Dictionary<string, object> dictionary in arrayList)
+                    {
+                        if (dictionary.Keys.Count == 0)
+                        {
+                            continue;
+                        }
+                        if (dataTable.Columns.Count == 0)
+                        {
+                            foreach (string current in dictionary.Keys)
+                            {
+                                dataTable.Columns.Add(current, dictionary[current].GetType());
+                            }
+                        }
+                        DataRow dataRow = dataTable.NewRow();
+                        foreach (string current in dictionary.Keys)
+                        {
+                            dataRow[current] = dictionary[current];
+                        }
+
+                        dataTable.Rows.Add(dataRow); //循环添加行到DataTable中
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteExLog(ex);
+            }
+            result = dataTable;
+            return result;
+        }
+
+        public static DataTable ToDataTable(JArray jArray)
+        {
+            if (jArray == null) return null;
+            DataTable dataTable = new DataTable();  //实例化
+            DataTable result;
+            try
+            {
+                if (jArray.Count > 0)
+                {
+                    bool firstLine = true;
+                    foreach (JToken jtoken in jArray)
+                    {
+                        IJsonTokenHandler handler = JsonTokenHandlerFactory.GetHandler(jtoken);
+                        List<string> columns = handler.GetKeys();
+                        if (firstLine)
+                        {
+                            foreach (string current in columns)
+                            {
+                                dataTable.Columns.Add(current, typeof(System.String));
+                            }
+                            firstLine = false;
+                        }
+                        DataRow dataRow = dataTable.NewRow();
+                        foreach (string current in columns)
+                        {
+                            dataRow[current] = handler.GetValue(current);
+                        }
+
+                        dataTable.Rows.Add(dataRow); //循环添加行到DataTable中
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteExLog(ex);
+            }
+            result = dataTable;
+            return result;
+        }
+        #region Handler
+        class JsonTokenHandlerFactory
+        {
+            static internal IJsonTokenHandler GetHandler(JToken token)
+            {
+                Type type = token.GetType();
+                if (typeof(JValue).IsAssignableFrom(type))
+                {
+                    return new JValueHandler(token);
+                }
+                else if (typeof(JContainer).IsAssignableFrom(type))
+                {
+                    if (typeof(JProperty).IsAssignableFrom(type))
+                    {
+                        return new JPropertyHandler(token);
+                    }
+                    else if (typeof(JArray).IsAssignableFrom(type))
+                    {
+                        return new JArrayHandler(token);
+                    }
+                    else if (typeof(JObject).IsAssignableFrom(type))
+                    {
+                        return new JObjectHandler(token);
+                    }
+                    else
+                        throw new Exception("不支持的JContainer类型");
+                }
+                else
+                {
+                    throw new Exception("不支持的JToken类型");
+                }
+            }
+        }
+        interface IJsonTokenHandler
+        {
+            string GetValue(string key);
+            List<string> GetKeys();
+        }
+        class JTokenHandler
+        {
+            protected JToken token = null;
+            internal JTokenHandler(JToken token)
+            {
+                this.token = token;
+            }
+        }
+        class JArrayHandler : JTokenHandler, IJsonTokenHandler
+        {
+            internal JArrayHandler(JToken token) : base(token)
+            {
+            }
+
+            public List<string> GetKeys()
+            {
+                return new List<string>() { "未实现" };
+            }
+
+            public string GetValue(string key)
+            {
+                return "未实现";
+            }
+        }
+        class JObjectHandler : JTokenHandler, IJsonTokenHandler
+        {
+            internal JObjectHandler(JToken token) : base(token)
+            {
+            }
+            public List<string> GetKeys()
+            {
+                List<string> list = new List<string>();
+                foreach (JProperty child in token.Children())
+                {
+                    list.Add(child.Name);
+                }
+                return list;
+            }
+
+            public string GetValue(string key)
+            {
+                string val = string.Empty;
+                foreach (JProperty child in token.Children())
+                {
+                    if(child.Name == key)
+                    {
+                        val = child.Value.ToString();
+                        break;
+                    }
+                }
+                return val;
+            }
+        }
+        class JValueHandler : JTokenHandler, IJsonTokenHandler
+        {
+            List<string> columnNames = new List<string>() { "array" };
+            internal JValueHandler(JToken token) : base(token)
+            {
+            }
+
+            public List<string> GetKeys()
+            {
+                return columnNames;
+            }
+
+            public string GetValue(string key)
+            {
+                return token.ToString();
+            }
+        }
+        class JPropertyHandler : JTokenHandler, IJsonTokenHandler
+        {
+            internal JPropertyHandler(JToken token) : base(token)
+            {
+            }
+
+            public List<string> GetKeys()
+            {
+                return new List<string>() { "未实现" };
+            }
+
+            public string GetValue(string key)
+            {
+                return "未实现";
+            }
+        }
+        #endregion
+
     }
 }

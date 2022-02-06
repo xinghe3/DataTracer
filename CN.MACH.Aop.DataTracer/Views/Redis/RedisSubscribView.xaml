@@ -7,6 +7,19 @@
              xmlns:local="clr-namespace:CN.MACH.Aop.DataTracer.Views.Redis"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style x:Key="RoundIconButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border CornerRadius="5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Background="{TemplateBinding Background}">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource FontAwesome}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -29,7 +42,7 @@
                 <!--<Path Data="M5,5 10,5 20,10 0,10" Fill="Aqua" />-->
             </Button>
             <Button Grid.Column="2" Click="LoadMsgs_Click" Content="&#xf0ea;" Style="{DynamicResource ButtonFontAwesome}"></Button>
-            <Button Grid.Column="3" Click="ClearSavedMsgs_Click" Content="&#xf0c7;" Style="{DynamicResource ButtonFontAwesome}"></Button>
+            <Button Grid.Column="3" Click="ClearSavedMsgs_Click" Content="&#xf014;" Style="{DynamicResource ButtonFontAwesome}"></Button>
             <CheckBox Grid.Column="4" IsChecked="{Binding Paused}" Style="{DynamicResource CheckBoxPlayStop}" Margin="5" VerticalAlignment="Center" />
         </Grid>
         <ListView x:Name="msglist" Grid.Row="1" ItemsSource="{Binding Records}" ItemTemplate="{DynamicResource RedisListDataTemplate}" Grid.RowSpan="2">
@@ -37,19 +50,49 @@
                 <DataTemplate x:Key="RedisListDataTemplate">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
                             <ColumnDefinition Width="150" />
-                            <ColumnDefinition Width="200" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Margin="5" VerticalAlignment="Center" Text="{Binding Time}" />
-                        <Button Grid.Column="1" x:Name="SendMsg" Click="SendMsg_Click"  Margin="5" VerticalAlignment="Center" Content="Send" />
-                        <Button Grid.Column="2" x:Name="SaveMsg" Click="SaveMsg_Click" Margin="5" VerticalAlignment="Center" Content="Save" />
-                        <TextBlock Grid.Column="3"  Margin="5" VerticalAlignment="Center" Text="{Binding Name}" MouseRightButtonUp="MsgName_MouseRightButtonUp" />
-                        <TextBlock Grid.Column="4"  Margin="5" VerticalAlignment="Center" Text="{Binding Desc}" />
-                        <common:JsonView Grid.Column="5" JsonString="{Binding Value}" />
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Border CornerRadius="5" Height="25" Background="#FFFFCC">
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Time}" Foreground="#666666" />
+                                </Border>
+                                <!--<Button Grid.Row="1" Content="&#xf064;" Style="{StaticResource RoundIconButtonStyle}" Height="30" Width="30" Background="#6699CC" x:Name="SendMsg" Click="SendMsg_Click" Margin="5" VerticalAlignment="Center" />-->
+                                <Button Grid.Column="1"  Height="30" Width="30" Background="#6699CC" x:Name="SendMsg" Click="SendMsg_Click" Margin="5" VerticalAlignment="Center" >
+                                    <Button.Template>
+                                        <ControlTemplate>
+                                            <Border CornerRadius="5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Background="{TemplateBinding Background}">
+                                                <TextBlock Text="&#xf064;" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource FontAwesome}" />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                <Button Grid.Column="2" Height="30" Width="30" Background="#99CCFF" x:Name="SaveMsg" Click="SaveMsg_Click" Margin="5" VerticalAlignment="Center">
+                                    <Button.Template>
+                                        <ControlTemplate>
+                                            <Border CornerRadius="5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Background="{TemplateBinding Background}">
+                                                <TextBlock Text="&#xf0c7;" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource FontAwesome}" />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
+
+                            <TextBlock Grid.Row="1"  Margin="5" VerticalAlignment="Center" Text="{Binding Name}" MouseRightButtonUp="MsgName_MouseRightButtonUp" />
+                            <TextBlock Grid.Row="2"  Margin="5" VerticalAlignment="Center" Text="{Binding Desc}" />
+                        </Grid>
+                        <common:JsonTableView Grid.Column="1" JsonString="{Binding Value}" />
                     </Grid>
                 </DataTemplate>
             </ListView.Resources>

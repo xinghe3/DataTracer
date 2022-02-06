@@ -12,7 +12,7 @@ namespace CN.MACH.AOP.Fody.Filters
     {
         public void Init()
         {
-            TraceTargetAttribute.IsRecord = true;
+            TraceTargetAttribute.IsRecord = false;
             Task.Run(() =>
             {
                 while (true)

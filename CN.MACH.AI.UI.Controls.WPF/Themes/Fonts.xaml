@@ -1,0 +1,10 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <FontFamily x:Key="fontawesome1">/Fonts/#fontawesome</FontFamily>
+    <Style x:Key="FontAwesome" >
+        <Setter Property="TextElement.FontFamily" Value="pack://application:,,,/CN.MACH.AI.UI.Controls.WPF;component/Fonts/#fontawesome" />
+    </Style>
+    <Style x:Key="ButtonFontAwesome" >
+        <Setter Property="Button.FontFamily" Value="pack://application:,,,/CN.MACH.AI.UI.Controls.WPF;component/Fonts/#fontawesome" />
+    </Style>
+</ResourceDictionary>

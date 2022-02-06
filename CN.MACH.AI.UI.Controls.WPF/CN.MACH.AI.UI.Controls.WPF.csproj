@@ -53,6 +53,15 @@
     <Compile Include="Common\JsonView.xaml.cs">
       <DependentUpon>JsonView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="JsonTable\JsonTableConverter.cs" />
+    <Compile Include="JsonTable\JsonTableView.xaml.cs">
+      <DependentUpon>JsonTableView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="JsonTable\JsonValue.cs" />
+    <Compile Include="ListViews\DataTableListView.xaml.cs">
+      <DependentUpon>DataTableListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\NotifyPropertyBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -70,6 +79,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Resource Include="Fonts\fontawesome-webfont.ttf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -79,6 +89,18 @@
     <Page Include="Common\JsonView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="JsonTable\JsonTableView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ListViews\DataTableListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Fonts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

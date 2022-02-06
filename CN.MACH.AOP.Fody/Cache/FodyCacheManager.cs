@@ -27,7 +27,10 @@ public class FodyCacheManager
                     PefixKey = "zbytest"
                 };
             }
-
+            if(cacheProvider != null)
+            {
+                cacheProvider.Dispose();
+            }
             cacheProvider = new CSRedisCacheProvider(cacheSetting);
         }
         return cacheProvider;

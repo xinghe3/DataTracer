@@ -103,7 +103,7 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
                 if (string.IsNullOrEmpty(opt)) return;
                 RedisMsgRecord redisMsgRecord = new RedisMsgRecord()
                 {
-                    Time = DateTime.Now.ToString("MM-dd HH:mm:ss"),
+                    Time = DateTime.Now.ToString("HH:mm:ss"),
                     Name = key,
                     Value = opt,
                     Desc = desc,
@@ -127,6 +127,7 @@ namespace CN.MACH.Aop.DataTracer.Views.Redis
             {
                 Records.Clear();
             });
+            allRecords.Clear();
         }
 
         private void searchKeyWords_KeyUp(object sender, KeyEventArgs e)
