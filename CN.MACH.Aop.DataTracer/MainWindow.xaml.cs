@@ -1,4 +1,5 @@
 ﻿using CN.MACH.Aop.DataTracer.Views;
+using CN.MACH.Aop.DataTracer.Views.JsonData;
 using CN.MACH.Aop.DataTracer.Views.Redis;
 using CN.MACH.Aop.DataTracer.Views.Tracer;
 using CN.MACH.AOP.Fody.Index;
@@ -58,6 +59,12 @@ namespace CN.MACH.Aop.DataTracer
             IMQProvider mQProvider = cacheProvider as IMQProvider;
             mQProvider.Init();
             cacheProvider.Dispose();
+        }
+
+        private void MenuItemJsonFile_Click(object sender, RoutedEventArgs e)
+        {
+            JsonFileDialog jsonFileView = new JsonFileDialog();
+            jsonFileView.Show();
         }
     }
 }

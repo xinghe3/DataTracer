@@ -15,6 +15,7 @@
             <MenuItem Header="Trace" >
                 <MenuItem Header="AOP Call" Click="MenuItemAOPCall_Click" />
                 <MenuItem Header="Redis Subscrib" Click="MenuItemRedisSubscrib_Click" />
+                <MenuItem Header="Json File" Click="MenuItemJsonFile_Click" />
                 <MenuItem Header="Options" Click="MenuItemOptions_Click" />
             </MenuItem>
         </Menu>

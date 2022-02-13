@@ -11,7 +11,8 @@
             <TextBlock Text="123" Background="Orange" />
         </DataTemplate>
     </UserControl.Resources>
-    <ListView x:Name="listView" >
+    <ListView x:Name="listView" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler"
+              PreviewMouseRightButtonDown="listView_PreviewMouseRightButtonDown">
         <ListView.ItemContainerStyle>
             <Style TargetType="ListViewItem">
                 <Setter Property="Height" Value="15" />

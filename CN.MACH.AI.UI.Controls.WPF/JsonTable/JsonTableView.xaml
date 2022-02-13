@@ -13,7 +13,8 @@
         <local:JsonTableConverter x:Key="jsonTableConverter"/>
 
     </UserControl.Resources>
-    <TreeView x:Name="treeView" ItemsSource="{Binding JsonString,ElementName=ucJson, Converter={StaticResource jsonTableConverter}}">
+    <TreeView x:Name="treeView" ItemsSource="{Binding JsonString,ElementName=ucJson, Converter={StaticResource jsonTableConverter}}"
+              VirtualizingStackPanel.IsVirtualizing="True" >
         <!--  ItemTemplateSelector="{StaticResource jsonTableDataTemplateSelector}" -->
         <TreeView.Resources>
         </TreeView.Resources>

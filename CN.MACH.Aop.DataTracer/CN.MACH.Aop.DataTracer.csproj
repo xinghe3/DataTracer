@@ -56,7 +56,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\RedisMsgRecord.cs" />
+    <Compile Include="Models\RedisSearchKeyWords.cs" />
     <Compile Include="Models\RedisSubscribOptions.cs" />
+    <Compile Include="Services\RedisMsgRecorder.cs" />
+    <Compile Include="Services\RedisQueryWords.cs" />
+    <Compile Include="Services\SavedMsgs.cs" />
     <Compile Include="Views\FuncCallDetailsView.xaml.cs">
       <DependentUpon>FuncCallDetailsView.xaml</DependentUpon>
     </Compile>
@@ -68,6 +72,12 @@
     </Compile>
     <Compile Include="Views\FuncCallView\FuncModel.cs" />
     <Compile Include="Views\FuncCallView\FuncParamDataTemplateSelector.cs" />
+    <Compile Include="Views\JsonData\JsonFileDialog.xaml.cs">
+      <DependentUpon>JsonFileDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\JsonData\JsonFileView.xaml.cs">
+      <DependentUpon>JsonFileView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Redis\RedisSubscribView.xaml.cs">
       <DependentUpon>RedisSubscribView.xaml</DependentUpon>
     </Compile>
@@ -104,6 +114,14 @@
     <Page Include="Views\FuncCallView\FuncListView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\JsonData\JsonFileDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\JsonData\JsonFileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Redis\RedisSubscribView.xaml">
       <SubType>Designer</SubType>

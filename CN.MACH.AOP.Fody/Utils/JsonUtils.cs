@@ -293,6 +293,15 @@ namespace CN.MACH.AOP.Fody.Utils
                             }
                             firstLine = false;
                         }
+                        // 首先检查是否有新列
+                        else
+                        {
+                            foreach (string current in columns)
+                            {
+                                if(!dataTable.Columns.Contains(current))
+                                    dataTable.Columns.Add(current, typeof(System.String));
+                            }
+                        }
                         DataRow dataRow = dataTable.NewRow();
                         foreach (string current in columns)
                         {
